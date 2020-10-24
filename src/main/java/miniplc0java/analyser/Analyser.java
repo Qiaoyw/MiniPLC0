@@ -194,6 +194,7 @@ public final class Analyser {
         // 示例函数，示例如何调用子程序
         // 'begin'
         expect(TokenType.Begin);
+        //进入<主过程>分析函数
 
         analyseMain();
 
@@ -202,10 +203,20 @@ public final class Analyser {
         expect(TokenType.EOF);
     }
 
+    //主过程分析函数 <主过程> ::= <常量声明><变量声明><语句序列>
     private void analyseMain() throws CompileError {
-        throw new Error("Not implemented");
+        //<常量声明>
+        analyseConstantDeclaration();
+        //<变量声明>
+        analyseVariableDeclaration();
+        //<语句序列>
+        analyseStatementSequence();
+
     }
 
+    //常量声明
+    /*  <常量声明> ::= {<常量声明语句>}
+        <常量声明语句> ::= 'const'<标识符>'='<常表达式>';'*/
     private void analyseConstantDeclaration() throws CompileError {
         // 示例函数，示例如何解析常量声明
         // 如果下一个 token 是 const 就继续
@@ -224,30 +235,71 @@ public final class Analyser {
         }
     }
 
+       /*   <变量声明> ::= {<变量声明语句>}
+            <变量声明语句> ::= 'var'<标识符>['='<表达式>]';'*/
+
     private void analyseVariableDeclaration() throws CompileError {
-        throw new Error("Not implemented");
+        while (nextIf(TokenType.Var) != null) {
+            // 变量名
+            var nameToken = expect(TokenType.Ident);
+            if(nextIf(TokenType.Equal)!=null){
+                analyseExpression();
+            }
+
+            // 分号
+            expect(TokenType.Semicolon);
+        }
     }
+
+    //<语句序列> ::= {<语句>}
+
 
     private void analyseStatementSequence() throws CompileError {
-        throw new Error("Not implemented");
+        while(check(TokenType.Ident)||check(TokenType.Print)||check(TokenType.Semicolon)){
+            analyseStatement();
+        }
     }
 
+    //<语句> ::= <赋值语句>|<输出语句>|<空语句>
     private void analyseStatement() throws CompileError {
-        throw new Error("Not implemented");
+        if(check(TokenType.Ident)){
+            analyseAssignmentStatement();
+        }
+        else if(check(TokenType.Print)){
+            analyseOutputStatement();
+        }
+        else{
+            expect(TokenType.Semicolon);
+        }
     }
 
+    //<常表达式> ::= [<符号>]<无符号整数>
     private void analyseConstantExpression() throws CompileError {
-        throw new Error("Not implemented");
+        if(check(TokenType.Plus)||check(TokenType.Minus)){
+            next();
+        }
+        expect(TokenType.Uint);
     }
 
+    //<表达式> ::= <项>{<加法型运算符><项>}
+    //<加法型运算符> ::= '+'|'-'
     private void analyseExpression() throws CompileError {
-        throw new Error("Not implemented");
+        analyseItem();
+        while(nextIf(TokenType.Minus) != null||nextIf(TokenType.Plus) != null){
+            analyseItem();
+        }
     }
 
+    //<赋值语句> ::= <标识符>'='<表达式>';'
     private void analyseAssignmentStatement() throws CompileError {
-        throw new Error("Not implemented");
+        var nameToken = expect(TokenType.Ident);
+        expect(TokenType.Equal);
+        analyseExpression();
+        expect(TokenType.Semicolon);
     }
 
+
+    //<输出语句> ::= 'print' '(' <表达式> ')' ';'
     private void analyseOutputStatement() throws CompileError {
         expect(TokenType.Print);
         expect(TokenType.LParen);
@@ -257,27 +309,43 @@ public final class Analyser {
         instructions.add(new Instruction(Operation.WRT));
     }
 
+    //<项> ::= <因子>{<乘法型运算符><因子>}
     private void analyseItem() throws CompileError {
-        throw new Error("Not implemented");
+        analyseFactor();
+        while(nextIf(TokenType.Mult) != null||nextIf(TokenType.Div) != null){
+            analyseFactor();
+        }
     }
 
+    //因子分析 <因子> ::= [<符号>]( <标识符> | <无符号整数> | '('<表达式>')' )
     private void analyseFactor() throws CompileError {
         boolean negate;
+        //<符号> ::= '+'|'-'
         if (nextIf(TokenType.Minus) != null) {
+            //是减号
             negate = true;
             // 计算结果需要被 0 减
             instructions.add(new Instruction(Operation.LIT, 0));
         } else {
+            //是不是加号
             nextIf(TokenType.Plus);
             negate = false;
         }
-
+        //标识符
         if (check(TokenType.Ident)) {
             // 调用相应的处理函数
+            var nameToken = expect(TokenType.Ident);
+            //无符号整数
         } else if (check(TokenType.Uint)) {
+            var nameToken = expect(TokenType.Uint);
             // 调用相应的处理函数
+
+            //左括号
         } else if (check(TokenType.LParen)) {
             // 调用相应的处理函数
+            next();
+            analyseExpression();
+            expect(TokenType.RParen);
         } else {
             // 都不是，摸了
             throw new ExpectedTokenError(List.of(TokenType.Ident, TokenType.Uint, TokenType.LParen), next());
