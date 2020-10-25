@@ -69,11 +69,11 @@ public class Tokenizer {
         // -- 前进一个字符，并存储这个字符
         //
 
-        if(word.equals("Begin"))  return new Token(TokenType.Begin,"Begin", it.previousPos(), it.currentPos());
-        else if(word.equals("End"))  return new Token(TokenType.End,"End", it.previousPos(), it.currentPos());
-        else if(word.equals("Var"))  return new Token(TokenType.Var,"Var", it.previousPos(), it.currentPos());
-        else if(word.equals("Const"))  return new Token(TokenType.Const,"Const", it.previousPos(), it.currentPos());
-        else if(word.equals("Print"))  return new Token(TokenType.Print,"Print", it.previousPos(), it.currentPos());
+        if(word.equals("begin"))  return new Token(TokenType.Begin,"Begin", it.previousPos(), it.currentPos());
+        else if(word.equals("end"))  return new Token(TokenType.End,"End", it.previousPos(), it.currentPos());
+        else if(word.equals("var"))  return new Token(TokenType.Var,"Var", it.previousPos(), it.currentPos());
+        else if(word.equals("const"))  return new Token(TokenType.Const,"Const", it.previousPos(), it.currentPos());
+        else if(word.equals("print"))  return new Token(TokenType.Print,"Print", it.previousPos(), it.currentPos());
         else return new Token(TokenType.Ident,word, it.previousPos(), it.currentPos());
         // 尝试将存储的字符串解释为关键字
         // -- 如果是关键字，则返回关键字类型的 token
