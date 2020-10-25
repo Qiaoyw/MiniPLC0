@@ -351,9 +351,12 @@ public final class Analyser {
     private void analyseAssignmentStatement() throws CompileError {
         // 赋值语句 -> 标识符 '=' 表达式 ';'
         // 分析这个语句
-
-        // 标识符是什么？
         var nameToken = expect(TokenType.Ident);
+        expect(TokenType.Equal);
+        analyseExpression();
+        expect(TokenType.Semicolon);
+        // 标识符是什么？
+
         String name =(String) nameToken.getValue();
         var symbol = symbolTable.get(name);
         if (symbol == null) {
@@ -384,7 +387,7 @@ public final class Analyser {
 
         instructions.add(new Instruction(Operation.WRT));
     }
-    
+
     //<项> ::= <因子>{<乘法型运算符><因子>}
     private void analyseItem() throws CompileError {
         // 项 -> 因子 (乘法运算符 因子)*
@@ -399,7 +402,7 @@ public final class Analyser {
             if (op.getTokenType() != TokenType.Div && op.getTokenType() != TokenType.Mult) {
                 break;
             }
-            
+
             next();
 
             // 因子
@@ -416,7 +419,7 @@ public final class Analyser {
     private void analyseFactor() throws CompileError {
         // 因子 -> 符号? (标识符 | 无符号整数 | '(' 表达式 ')')
         //因子分析 <因子> ::= [<符号>]( <标识符> | <无符号整数> | '('<表达式>')' )
-        
+
         boolean negate;
         if (nextIf(TokenType.Minus) != null) {
             negate = true;
