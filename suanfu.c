@@ -67,7 +67,7 @@ int begin(){
 			printf("E\n");
 			return 2;
 		}
-		else if(top==0||word=='i'){
+		else if(top==0){
 			zhan[top++]=word;
 			printf("I%c\n",word);
 			return 0;
