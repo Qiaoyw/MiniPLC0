@@ -2,6 +2,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
+//char txt[1002]="i+i+i+i";
 char txt[1002];
 int max;
 char zhan[1002];
@@ -26,73 +27,85 @@ int change(char x){
 }
 
 int find(){
-	int i=top;
+	int i=top-1;
 	while(zhan[i]=='e') i--;
 	return i;
 }
 
 void move(){
 	int i;
-	for(i=end;i<top;i++){
+	for(i=end;i<top-1;i++){
 		zhan[i]=zhan[i+1]; 
 	} 
 	zhan[top--]='\0';
 }
 
 int up(){
-	if(zhan[end]=='i'&&end==top) zhan[end]='e';
+	if(zhan[end]=='i'&&end==top-1) zhan[end]='e';
 	else if(end>0&&(end==top-1)&&top>=2&&(zhan[end]=='+'||zhan[end]=='*')&&zhan[end-1]=='e'&&zhan[end+1]=='e'){
-		zhan[top]='\0';
 		zhan[top-1]='\0';
+		zhan[top-2]='\0';
 		top=top-2;
 	}
 	else{
-		printf("RE");
+		printf("RE\n");
 		return 0; 
 	}
-	printf("R");
+	printf("R\n");
 	return 1;
 }
 
 int begin(){
-		char word=txt[max];
-		end=find();
-		if(end==5){    //无法识别 
-			printf("E");
+		char word='\0';
+		word=txt[max];
+	
+		if(change(word)==5){    //无法识别 
+			printf("E\n");
 			return 2;
 		}
-		int flag=suan[change(zhan[end])][change(word)];
-		if(top==0||(flag<0)){
+		else if(top==0||word=='i'){
 			zhan[top++]=word;
-			printf("I%c",word);
+			printf("I%c\n",word);
 			return 0;
 		}
-		else if(flag=0){
-			move();
-			return 0;
-		}
-		else if(flag==1|word=='\r'){
-			//规约 
-			//E::=E+E|E*E|(E)|i;
-			if(up()==1){
-				begin();
+		else{
+			end=find();
+			int x1=change(zhan[end]);
+			int x2=change(word);
+			int flag=suan[change(zhan[end])][change(word)];
+			if(flag<0){
+				zhan[top++]=word;
+				printf("I%c\n",word);
+				return 0;
 			}
-			else{
-				return 2; 
+			else if(flag==0){
+				move();
+				return 0;
 			}
+			else if(flag==1||word=='\r'){
+				//规约 
+				//E::=E+E|E*E|(E)|i;
+				if(up()==1){
+					begin();
+				}
+				else{
+					return 2; 
+				}
 			
+			}
+			else{        //无法比较优先级 
+				printf("E\n");
+				return 2;
+			}	
 		}
-		else{        //无法比较优先级 
-			printf("E");
-			return 2;
-		}	
+		
+		
 }
 
 int main(int argc, char *argv[]){
 	FILE *fp = fopen(argv[1],"r");
 	if(fp==NULL) printf("error"); 
 	fgets(txt,999,fp);
-	char word;
 	while(txt[max]!='\n'){
 		if(begin()==2) break;
 		max++;
