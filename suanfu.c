@@ -65,11 +65,11 @@ int begin(){
 		if(top==0||(flag<0)){
 			zhan[top++]=word;
 			printf("I%c",word);
-			return;
+			return 0;
 		}
 		else if(flag=0){
 			move();
-			return;
+			return 0;
 		}
 		else if(flag==1|word=='\r'){
 			//规约 
@@ -78,7 +78,7 @@ int begin(){
 				begin();
 			}
 			else{
-				return; 
+				return 2; 
 			}
 			
 		}
@@ -97,9 +97,6 @@ int main(int argc, char *argv[]){
 		if(begin()==2) break;
 		max++;
 	}
-	
-	
-	
 	fclose(fp);
 	return 0;
 } 
