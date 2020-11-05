@@ -83,6 +83,7 @@ int begin(){
 				return 0;
 			}
 			else if(flag==0){
+				printf("I%c\n",word);
 				move();
 				return 0;
 			}
@@ -113,7 +114,7 @@ int main(int argc, char *argv[]){
 	fgets(txt,999,fp);
 	int len=strlen(txt);
 	txt[len-2]='#';
-	while(txt[max]!='\r'){
+	while(txt[max]!='\n'){
 		if(begin()==2) break;
 		max++;
 	}
