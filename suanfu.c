@@ -24,7 +24,8 @@ int change(char x){
 	else if(x=='(') return 2;
 	else if(x==')') return 3;
 	else if(x=='i') return 4;
-	else return 5;
+	else if(x=='#') return 5;
+	else return 6;
 }
 
 int find(){
@@ -60,7 +61,7 @@ int begin(){
 		char word='\0';
 		word=txt[max];
 	
-		if(change(word)==5){    //无法识别 
+		if(change(word)==6){    //无法识别 
 			printf("E\n");
 			return 2;
 		}
@@ -107,7 +108,9 @@ int main(int argc, char *argv[]){
 	FILE *fp = fopen(argv[1],"r");
 	if(fp==NULL) printf("error"); 
 	fgets(txt,999,fp);
-	while(txt[max]!='\n'){
+	int len=strlen(txt);
+	txt[len]='#';
+	while(txt[max]!='\0'){
 		if(begin()==2) break;
 		max++;
 	}
