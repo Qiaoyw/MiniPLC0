@@ -40,6 +40,8 @@ void move(){
 		zhan[i]=zhan[i+1]; 
 	} 
 	zhan[top--]='\0';
+	printf("R\n");
+	return ;
 }
 
 int up(){
@@ -84,7 +86,7 @@ int begin(){
 				move();
 				return 0;
 			}
-			else if(flag==1||word=='\r'){
+			else if(flag==1){
 				//规约 
 				//E::=E+E|E*E|(E)|i;
 				if(up()==1){
@@ -109,8 +111,8 @@ int main(int argc, char *argv[]){
 	if(fp==NULL) printf("error"); 
 	fgets(txt,999,fp);
 	int len=strlen(txt);
-	txt[len]='#';
-	while(txt[max]!='\0'){
+	txt[len-2]='#';
+	while(txt[max]!='\r'){
 		if(begin()==2) break;
 		max++;
 	}
