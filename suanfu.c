@@ -43,7 +43,7 @@ void move(){
 
 int up(){
 	if(zhan[end]=='i'&&end==top-1) zhan[end]='e';
-	else if(end>0&&(end==top-1)&&top>=2&&(zhan[end]=='+'||zhan[end]=='*')&&zhan[end-1]=='e'&&zhan[end+1]=='e'){
+	else if(end>0&&(end==top-2)&&top>=3&&(zhan[end]=='+'||zhan[end]=='*')&&zhan[end-1]=='e'&&zhan[end+1]=='e'){
 		zhan[top-1]='\0';
 		zhan[top-2]='\0';
 		top=top-2;
