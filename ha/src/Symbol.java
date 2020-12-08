@@ -10,6 +10,10 @@ public class Symbol {
     String type;
     //是否是常量
     boolean isConst;
+    
+    //局部或全局变量id
+    int Lid;
+    
 
     //参数列表？
     List<Symbol> param = new ArrayList<>();
@@ -22,11 +26,12 @@ public class Symbol {
     int level;
 
     public Symbol(){}
-    public Symbol(String name,String type,boolean isConst,int level){
+    public Symbol(String name,String type,boolean isConst,int level,int Lid){
         this.name=name;
         this.type=type;
         this.isConst=isConst;
         this.level=level;
+        this.Lid=Lid;
     }
 
     //函数构造如下
