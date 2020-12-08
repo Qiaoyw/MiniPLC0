@@ -74,7 +74,8 @@ public class Tokenizer {
     /**关键字  标识符*/
     private Token lexIdentOrKeyword() throws TokenizeError {
         String word="";
-        while(Character.isLetterOrDigit(it.peekChar())){
+        //下划线或者字母
+        while(Character.isLetterOrDigit(it.peekChar())||(it.peekChar()=='_')){
             word=word+it.nextChar();
         }
         // 尝试将存储的字符串解释为关键字
