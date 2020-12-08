@@ -4,7 +4,6 @@ import java.util.Stack;
 
 public class Analyser {
     Tokenizer tokenizer;
-    ArrayList<Instruction> instructions;
 
     /**层数**/
     int LEVEL=1;
@@ -57,17 +56,13 @@ public class Analyser {
 
     public Analyser(Tokenizer tokenizer) {
         this.tokenizer = tokenizer;
-        this.instructions = new ArrayList<>();
+        this.instructionmap = new ArrayList<>();
     }
 
     public Analyser() {
     }
 
-    //??不知道是干嘛的
-    public List<Instruction> analyse() throws CompileError {
-        analyseProgram();
-        return instructions;
-    }
+
     /**
      * 查看下一个 Token
      *
@@ -148,6 +143,7 @@ public class Analyser {
         //program -> decl_stmt* function*
         while(check(TokenType.LET_KW)||check(TokenType.CONST_KW)) analyseDeclStmt();
 
+        //_start是0
         Fnum=1;
         //保存之前的，给_start
         List<Instruction> init=instructionmap;
@@ -186,7 +182,6 @@ public class Analyser {
         Function function = new Function(0,Gnum,0,0,0,init);
         //添加到索引为0的地方,后面后移
         functionmap.add(0,function);
-        Fnum++;
         Gnum++;
     }
 
@@ -223,7 +218,7 @@ public class Analyser {
         //System.out.println("\n"+k);
         if(k==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL));
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
-        
+
         //赋值才需要取地址
         if(check(TokenType.ASSIGN)){
             next();
@@ -239,7 +234,7 @@ public class Analyser {
             if(!type2.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
             //表达式运算后需要弹栈(把剩下的操作符的指令)
             popZ();
-            
+
             //存值
             ins = new Instruction(Operation.store_64,0x17,null);
             instructionmap.add(ins);
@@ -258,7 +253,6 @@ public class Analyser {
 
         expect(TokenType.COLON);
 
-        //类型会被记录为const
         Token ty=analyseTy();
         String type=ty.getValueString();
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
@@ -283,13 +277,12 @@ public class Analyser {
 
         expect(TokenType.ASSIGN);
 
-
         //类型不一致要报错
         String type2=analyseExpr();
         if(!type.equals(type2)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         //表达式运算后需要弹栈(把剩下的操作符的指令)
-        while (!stack.empty()) OpFunction.OpInstruction(stack.pop(),instructionmap);
+        popZ();
 
         expect(TokenType.SEMICOLON);
 
@@ -297,9 +290,10 @@ public class Analyser {
         instructionmap.add(ins);
     }
 
+    //??改完了
     /**类型系统*/
     private Token analyseTy() throws CompileError {
-        //ty -> IDENT 只能是void和int
+        //ty -> IDENT 只能是void和int和double
         Token tt=peek();
         if(tt.getValue().equals("void")||tt.getValue().equals("int")||tt.getValue().equals("double")){
             next();
@@ -308,6 +302,7 @@ public class Analyser {
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
         return tt;
     }
+
 
     /**函数声明*/
     private void analyseFunction() throws CompileError {
@@ -395,7 +390,7 @@ public class Analyser {
         return param;
     }
 
-
+     //??改完了，减号
     /**表达式*/
     private String analyseExpr() throws CompileError {
         //expr ->
@@ -424,11 +419,14 @@ public class Analyser {
             String name= ident.getValueString();
             int position=SearchByNameExist(name);
             Symbol symbol;
+            //是否是库函数
+            boolean ku=false;
             //记录IDENT的type
             //如果没有找到，看看是不是标准库函数
             if (position==-1){
                 symbol=judgeKu(name);
                 type="fun";
+                ku=true;
                 //不是标准库函数
                 if(symbol==null) throw new AnalyzeError(ErrorCode.Break,ident.getStartPos());
             }
@@ -439,7 +437,7 @@ public class Analyser {
             //函数调用,把type赋值为返回值
             if(check(TokenType.L_PAREN)){
                 if(!type.equals("fun")) throw new AnalyzeError(ErrorCode.Break,ident.getStartPos());
-                type=analyseCallExpr(symbol);
+                type=analyseCallExpr(symbol,ku);
             }
             //赋值
             else if(check(TokenType.ASSIGN)){
@@ -493,14 +491,17 @@ public class Analyser {
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
 
-    //??不改
+    //??改完了
     /**取反表达式*/
     private String analyseNegateExpr() throws CompileError {
         //negate_expr -> '-' expr
         expect(TokenType.MINUS);
         String type= analyseExpr();
+        if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+        instructionmap.add(new Instruction(Operation.neg_i,0x34,null));
         return type;
     }
+
     //??改过
     /**赋值表达式*/
     private String analyseAssignExpr(String typeLeft) throws CompileError {
@@ -517,6 +518,8 @@ public class Analyser {
         if(typeLeft.equals(typeRight)) return "void";
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
+
+    //??改完了
     /**类型转换表达式*/
     private String analyseAsExpr() throws CompileError {
         //as_expr -> expr 'as' ty
@@ -524,11 +527,14 @@ public class Analyser {
         expect(TokenType.AS_KW);
         Token ty=analyseTy();
         String type=ty.getValueString();
+        //只能是int 和double
+        if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         return type;
     }
 
     /**函数调用表达式*/
     //参数
+    //??改完了
     private void analyseCallParamList(Symbol function) throws CompileError {
         //call_param_list -> expr (',' expr)*
         int position =0;
@@ -536,6 +542,12 @@ public class Analyser {
         List<Symbol> param=function.param;
 
         type=analyseExpr();
+
+        //把函数里没有运算的符号弹出来
+        while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
+            TokenType tt=stack.pop();
+            OpFunction.OpInstruction(tt,instructionmap);
+        }
         //参数类型不同
         if(!param.get(position).type.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         position++;
@@ -544,24 +556,63 @@ public class Analyser {
             type=analyseExpr();
             if(!param.get(position).type.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
             position++;
+            while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
+                TokenType tt=stack.pop();
+                OpFunction.OpInstruction(tt,instructionmap);
+            }
         }
         //参数个数不同
         if(position!=param.size()) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
+
     //调用
-    private String analyseCallExpr(Symbol function) throws CompileError {
+    //??改完了
+    private String analyseCallExpr(Symbol function,boolean ku) throws CompileError {
         //call_expr -> IDENT '(' call_param_list? ')'
         //IDENT判断过了
-        //得到函数名字的Symbole
+        Instruction ins;
+
+        if(ku){
+            //库函数需要被加进全局变量表
+            Global global=new Global(Gnum,true,function.name.length(),function.name);
+            globalmap.add(global);
+            //调用操作
+            ins = new Instruction(Operation.callname,0x4a,Gnum);
+            Gnum++;
+        }
+        else{
+            //一般函数，找寻函数id
+            int nameid=SearchByNameExist(function.name);
+            int id= findIDbyNameId(nameid);
+            ins = new Instruction(Operation.call,0x48,id);
+        }
+
+        //分配返回值空间
+        int x=1;
+        if(function.back=="void")  x=0;
+        instructionmap.add(new Instruction(Operation.stackalloc, 0x1a,x));
 
         expect(TokenType.L_PAREN);
+        //左括号入栈
+        stack.push(TokenType.L_PAREN);
+
         if(!check(TokenType.R_PAREN)){
             analyseCallParamList(function);
         }
         expect(TokenType.R_PAREN);
 
+        //把函数里没有运算的符号弹出来
+        while(stack.peek()!= TokenType.L_PAREN) {
+            TokenType tt=stack.pop();
+            OpFunction.OpInstruction(tt,instructionmap);
+        }
+        stack.pop();
+
+        //最后压入call命令
+        instructionmap.add(ins);
         return function.getBack();
     }
+
     //??改过
     /**字面量表达式*/
     private String analyseLiteralExpr() throws CompileError {
@@ -592,7 +643,7 @@ public class Analyser {
 
             //变量数量+1
             Gnum++;
-            return "int";
+            return "string";
         }
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
@@ -746,7 +797,7 @@ public class Analyser {
             back="void";
         }
         else if(name.equals("putstr")){
-            param.add(new Symbol("param1","int",false,LEVEL+1));
+            param.add(new Symbol("param1","string",false,LEVEL+1));
             back="void";
         }
         else return null;
@@ -786,22 +837,6 @@ public class Analyser {
         }
         return -1;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
