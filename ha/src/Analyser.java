@@ -142,12 +142,7 @@ public class Analyser {
         }
     }
 
-
-    public void Analyse() throws CompileError{
-        analyseProgram();
-    }
-
-    //??改过
+    //??改完了
     public void analyseProgram() throws CompileError {
         //程序结构
         //program -> decl_stmt* function*
@@ -167,36 +162,35 @@ public class Analyser {
             Gnum++;
             Fnum++;
         }
-        //看是否有main函数
-        if(SearchByNameExist("main")==-1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
+        //看是否有main函数,符号表
+        int mainId=SearchByNameExist("main");
+        if(mainId == -1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
+        Symbol main = symbolmap.get(mainId);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if (main.back.equals("void")) {
+            //没有返回值则分配0个地址
+            init.add(new Instruction(Operation.stackalloc,0x1a, 0));
+            init.add(new Instruction(Operation.call,0x48,findIDbyNameId(mainId)));
+        }
+        else {
+            //有返回值分配一个空间
+            init.add(new Instruction(Operation.stackalloc,0x1a, 1));
+            init.add(new Instruction(Operation.call,0x48,findIDbyNameId(mainId)));
+            init.add(new Instruction(Operation.popn,0x03,1));
+        }
         //向全局变量填入口程序_start
         Global global = new Global(Gnum,true, 6, "_start");
         globalmap.add(global);
-        //_start加入函数表,该函数的编号为0
-        Function function = new Function(0,Gnum,0,0,0,instructionmap);
+        //_start加入函数表,该函数的编号为0,指令集是init
+        Function function = new Function(0,Gnum,0,0,0,init);
         //添加到索引为0的地方,后面后移
         functionmap.add(0,function);
         Fnum++;
         Gnum++;
-
-
     }
 
+    //??写完了
     /**声明语句*/
     private void analyseDeclStmt() throws CompileError {
         //decl_stmt -> let_decl_stmt | const_decl_stmt
@@ -208,7 +202,7 @@ public class Analyser {
         else Lnum++;
     }
 
-    //??改过
+    //??改完了
     private void analyseLetDeclStmt() throws CompileError {
         //let_decl_stmt -> 'let' IDENT ':' ty ('=' expr)? ';'
         expect(TokenType.LET_KW);
@@ -225,37 +219,35 @@ public class Analyser {
         //全局变量入表
         if(LEVEL==1) globalmap.add(new Global(Gnum,false));
         //加符号表
-
-
         int k=SearchByNameAdd(name);
         //System.out.println("\n"+k);
         if(k==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL));
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
-
-        String type2;
+        
+        //赋值才需要取地址
         if(check(TokenType.ASSIGN)){
             next();
-            //赋值才需要取地址
-            //全局变量入表
             Instruction ins;
             if(LEVEL==1) ins = new Instruction(Operation.globa,0x0c,Gnum);
             //局部变量指令
             else ins = new Instruction(Operation.loca,0x0a,Lnum);
-
             instructionmap.add(ins);
 
+            String type2;
             //类型是否一致
             type2=analyseExpr();
             if(!type2.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
             //表达式运算后需要弹栈(把剩下的操作符的指令)
-            while (!stack.empty()) OpFunction.OpInstruction(stack.pop(),instructionmap);
+            popZ();
+            
+            //存值
+            ins = new Instruction(Operation.store_64,0x17,null);
+            instructionmap.add(ins);
         }
         expect(TokenType.SEMICOLON);
-        Instruction ins = new Instruction(Operation.store_64,0x17,null);
-        instructionmap.add(ins);
     }
 
-    //??改过
+    //??改完了
     private void analyseConstDeclStmt() throws CompileError {
         //const_decl_stmt -> 'const' IDENT ':' ty '=' expr ';'
         expect(TokenType.CONST_KW);
@@ -776,12 +768,23 @@ public class Analyser {
         //System.out.println(LEVEL);
     }
 
+    /**符号栈弹栈**/
     public void popZ(){
         //弹栈运算
         while (!stack.empty()) {
             TokenType type= stack.pop();
             OpFunction.OpInstruction(type,instructionmap);
         }
+    }
+
+    /**在函数表通过全局编号找函数编号**/
+    private int findIDbyNameId(int nameid){
+        Function n;
+        for(int i = functionmap.size()-1;i >=0;i--) {
+            n = functionmap.get(i);
+            if (n.name==nameid) return n.id;
+        }
+        return -1;
     }
 
 
