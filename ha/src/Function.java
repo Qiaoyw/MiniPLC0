@@ -1,15 +1,23 @@
 import java.util.List;
 
+
 /**全局函数的表**/
 public class Function {
+    //函数编号
     int id;
+    //在全局变量中的编号
+    int name;
     int returnSlots;
     int paramSlots;
     int localSlots;
     List<Instruction> body;
 
-    public Function(int id,int returnSlots,int paramSlots,int localSlots,List<Instruction> body){
+    public Function(){
+    }
+
+    public Function(int id, int name, int returnSlots, int paramSlots, int localSlots, List<Instruction> body){
         this.id=id;
+        this.name=name;
         this.returnSlots=returnSlots;
         this.paramSlots=paramSlots;
         this.localSlots=localSlots;
