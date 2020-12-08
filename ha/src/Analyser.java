@@ -60,6 +60,7 @@ public class Analyser {
     }
 
     public Analyser() {
+        
     }
 
 
@@ -137,6 +138,10 @@ public class Analyser {
         }
     }
 
+    public void analyse() throws CompileError {
+        analyseProgram();
+    }
+    
     //??改完了
     public void analyseProgram() throws CompileError {
         //程序结构
