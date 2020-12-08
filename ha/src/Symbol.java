@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +18,12 @@ public class Symbol {
 
     //全局变量id
     int Gid;
-    
+
     //参数的函数编号
     int funid;
-
-
+    //参数编号
+    int paraid;
+    
     //参数列表？
     List<Symbol> param = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class Symbol {
     int level;
 
     public Symbol(){}
-    public Symbol(String name,String type,boolean isConst,int level,int Lid,int Gid,int funid){
+    public Symbol(String name,String type,boolean isConst,int level,int Lid,int Gid,int funid,int paraid){
         this.name=name;
         this.type=type;
         this.isConst=isConst;
@@ -43,6 +43,7 @@ public class Symbol {
         this.Lid=Lid;
         this.Gid=Gid;
         this.funid=funid;
+        this.paraid=paraid;
     }
 
     //函数构造如下
