@@ -16,7 +16,8 @@ public enum Operation{
         cmp_i,
     //浮点数大小比较
         cmp_f,
-        neg,
+        neg_i,
+        neg_f,
         set_lt,
         set_gt,
         br,
