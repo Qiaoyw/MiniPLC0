@@ -91,6 +91,7 @@ public class Analyser {
         if (peekedToken != null) {
             Token token = peekedToken;
             peekedToken = null;
+            System.out.print(token.getValue()+ " ");
             return token;
         } else {
             return tokenizer.nextToken();
@@ -152,11 +153,9 @@ public class Analyser {
         //program -> decl_stmt* function*
         while(check(TokenType.LET_KW)||check(TokenType.CONST_KW)) analyseDeclStmt();
 
-        //向全局变量填入口程序_start,该函数的编号为0
-        Global global = new Global(Gnum,true, 6, "_start");
-        globalmap.add(global);
-        //?_start不用加入函数表？
-
+        Fnum=1;
+        //保存之前的，给_start
+        List<Instruction> init=instructionmap;
         while(check(TokenType.FN_KW)){
             //每次分析函数之前重置指令表
             instructionmap = new ArrayList<>();
@@ -170,6 +169,30 @@ public class Analyser {
         }
         //看是否有main函数
         if(SearchByNameExist("main")==-1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //向全局变量填入口程序_start
+        Global global = new Global(Gnum,true, 6, "_start");
+        globalmap.add(global);
+        //_start加入函数表,该函数的编号为0
+        Function function = new Function(0,Gnum,0,0,0,instructionmap);
+        //添加到索引为0的地方,后面后移
+        functionmap.add(0,function);
+        Fnum++;
+        Gnum++;
 
 
     }
@@ -324,7 +347,7 @@ public class Analyser {
         //局部变量个数分析完了才能写出来
 
         //加入函数表，为了输出
-        Function function = new Function(Gnum,returnSlot,n.size(),Lnum,instructionmap);
+        Function function = new Function(Fnum,Gnum,returnSlot,n.size(),Lnum,instructionmap);
         functionmap.add(function);
 
         //加入全局变量量表
@@ -401,11 +424,12 @@ public class Analyser {
             Token ident= next();
             String name= ident.getValueString();
             int position=SearchByNameExist(name);
-            Symbol symbol=new Symbol();
+            Symbol symbol;
             //记录IDENT的type
             //如果没有找到，看看是不是标准库函数
             if (position==-1){
                 symbol=judgeKu(name);
+                type="fun";
                 //不是标准库函数
                 if(symbol==null) throw new AnalyzeError(ErrorCode.Break,ident.getStartPos());
             }
@@ -569,7 +593,7 @@ public class Analyser {
 
             //变量数量+1
             Gnum++;
-            return "string";
+            return "int";
         }
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
