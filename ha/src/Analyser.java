@@ -91,7 +91,7 @@ public class Analyser {
         if (peekedToken != null) {
             Token token = peekedToken;
             peekedToken = null;
-            System.out.print(token.getValue()+ " ");
+            //System.out.print(token.getValue()+ " ");
             return token;
         } else {
             return tokenizer.nextToken();
@@ -224,9 +224,12 @@ public class Analyser {
 
         //全局变量入表
         if(LEVEL==1) globalmap.add(new Global(Gnum,false));
-
         //加符号表
-        if(SearchByNameAdd(name)==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL));
+
+
+        int k=SearchByNameAdd(name);
+        //System.out.println("\n"+k);
+        if(k==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL));
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         String type2;
@@ -343,6 +346,13 @@ public class Analyser {
         if(back.equals("int")) returnSlot=1;
         else if(back.equals("double")) returnSlot=2;
 
+
+        //加入符号表,存当前函数
+        Symbol fun=new Symbol(name,"fun",n,LEVEL,back);
+        //System.out.println(name+LEVEL);
+        functionNow=fun;
+        symbolmap.add(fun);
+
         analyseBlockStmt();
         //局部变量个数分析完了才能写出来
 
@@ -354,10 +364,6 @@ public class Analyser {
         Global global = new Global(Gnum,true,name.length(),name);
         globalmap.add(global);
 
-        //加入符号表,存当前函数
-        Symbol fun=new Symbol(name,"fun",n,LEVEL,back);
-        functionNow=fun;
-        symbolmap.add(fun);
     }
 
     private List<Symbol> analyseFunctionParamList() throws CompileError {
@@ -389,10 +395,11 @@ public class Analyser {
         type=ty.getValueString();
 
         //?要给参数编号么?
-        Symbol param=new Symbol(name,type,isConst,LEVEL+1);
-        if(SearchByNameAdd(name)==-1) symbolmap.add(param);
-
-        else throw new AnalyzeError(ErrorCode.Break,ident.getStartPos());
+        int level=LEVEL+1;
+        Symbol param=new Symbol(name,type,isConst,level);
+        //System.out.println(name+level);
+        //没变量会跟参数重名
+        symbolmap.add(param);
         return param;
     }
 
@@ -610,10 +617,12 @@ public class Analyser {
     private String analyseGroupExpr() throws CompileError {
         //group_expr -> '(' expr ')'
         expect(TokenType.L_PAREN);
+        stack.push(TokenType.L_PAREN);
         String type=analyseExpr();
         //遇到右括号，算括号里的所有东西
+
         while(stack.peek()!= TokenType.L_PAREN) {
-            TokenType tt = stack.pop();
+            TokenType tt=stack.pop();
             OpFunction.OpInstruction(tt,instructionmap);
         }
         stack.pop();
@@ -678,7 +687,7 @@ public class Analyser {
             backType=analyseExpr();
         }
         //如果返回值不一样，就报错
-        if(backType.equals(functionNow.getBack())) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+        if(!backType.equals(functionNow.getBack())) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         expect(TokenType.SEMICOLON);
     }
     /**代码块*/
@@ -707,7 +716,7 @@ public class Analyser {
    /**按照名字查询符号表**/
    //如果该层没有，返回-1,声明时调用
     public int SearchByNameAdd(String name){
-        Symbol n=new Symbol();
+        Symbol n;
         for(int i = symbolmap.size()-1;i >=0;i--) {
             n = symbolmap.get(i);
             if (name.equals(n.name)&&LEVEL==n.getLevel()) return i;
@@ -756,14 +765,15 @@ public class Analyser {
 
     //结束一层之后，出栈
     public void outZhan(){
-        Symbol n=new Symbol();
+        Symbol n;
         for(int i = symbolmap.size()-1;i >=0;i--) {
             //局部变量减少
-            Lnum--;
             n = symbolmap.get(i);
             if (n.level==LEVEL) symbolmap.remove(i);
-            else break;
+            Lnum--;
         }
+        //System.out.println(symbolmap);
+        //System.out.println(LEVEL);
     }
 
     public void popZ(){
