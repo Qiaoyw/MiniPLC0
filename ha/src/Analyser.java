@@ -89,7 +89,7 @@ public class Analyser {
      */
     private Token next() throws TokenizeError {
         if (peekedToken != null) {
-            var token = peekedToken;
+            Token token = peekedToken;
             peekedToken = null;
             return token;
         } else {
@@ -105,7 +105,7 @@ public class Analyser {
      * @throws TokenizeError
      */
     private boolean check(TokenType tt) throws TokenizeError {
-        var token = peek();
+        Token token = peek();
         return token.getTokenType() == tt;
     }
 
@@ -117,7 +117,7 @@ public class Analyser {
      * @throws TokenizeError
      */
     private Token nextIf(TokenType tt) throws TokenizeError {
-        var token = peek();
+        Token token = peek();
         if (token.getTokenType() == tt) {
             return next();
         } else {
@@ -133,7 +133,7 @@ public class Analyser {
      * @throws CompileError 如果类型不匹配
      */
     private Token expect(TokenType tt) throws CompileError {
-        var token = peek();
+        Token token = peek();
         if (token.getTokenType() == tt) {
             return next();
         } else {
