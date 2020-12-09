@@ -629,6 +629,8 @@ public class Analyser {
             //一般函数，找寻函数id
             int nameid=SearchByNameExist(function.name);
             int id= findIDbyNameId(nameid);
+            //自己调自己
+            if(id==-1) id=Fnum;
             ins = new Instruction(Operation.call,0x48,id);
         }
 
