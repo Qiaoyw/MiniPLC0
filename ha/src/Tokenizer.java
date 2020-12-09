@@ -179,7 +179,7 @@ public class Tokenizer {
 
     /**字符串常量*/
     private Token lexString() throws TokenizeError {
-        String chuan="\"";
+        String chuan="";
         it.nextChar();
         while(true){
             if(it.peekChar()!='"') chuan=chuan+it.nextChar();
@@ -190,10 +190,8 @@ public class Tokenizer {
                         chuan=chuan+it.nextChar();
                         break;
                     }
-                    else chuan=chuan+it.nextChar();
                 }
                 else{
-                    chuan=chuan+it.nextChar();
                     break;
                 }
             }
