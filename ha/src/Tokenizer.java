@@ -100,7 +100,7 @@ public class Tokenizer {
     /**标识符*/
     private Token lexIdent() throws TokenizeError {
         String word="";
-        while(Character.isLetterOrDigit(it.peekChar())){
+        while(Character.isLetterOrDigit(it.peekChar())||it.peekChar()=='_'){
             word=word+it.nextChar();
         }
         return new Token(TokenType.IDENT,word, it.previousPos(), it.currentPos());
@@ -132,6 +132,10 @@ public class Tokenizer {
                 return new Token(TokenType.COLON, ':', it.previousPos(), it.currentPos());
             case ';':
                 return new Token(TokenType.SEMICOLON, ';', it.previousPos(), it.currentPos());
+            case '_':
+                return new Token(TokenType.UNDERLINE, '_', it.previousPos(), it.currentPos());
+            case '\\':
+                return new Token(TokenType.GANG, '\\', it.previousPos(), it.currentPos());
 
             //减号  ->
             case '-':
