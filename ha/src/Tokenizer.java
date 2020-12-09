@@ -191,40 +191,80 @@ public class Tokenizer {
         }
     }
 
-    /**字符串常量*/
+    //字符串常量
     private Token lexString() throws TokenizeError {
-        String chuan="";
-        it.nextChar();
+        String stringLiteral = "" ;
+        char pre = it.nextChar();
         int i = 65535;
-        //\的数量
-        while(i>0) {
-            char look = it.nextChar();
-            System.out.println(look + "\n");
-            i--;
-            if (look == '\\') {
-                //转义
-                if (it.peekChar() == 'n') {
-                    it.nextChar();
-                    chuan = chuan + '\n';
-                } else if (it.peekChar() == '\'') {
-                    it.nextChar();
-                    chuan = chuan + '\'';
-                } else if (it.peekChar() == '\\') {
-                    chuan = chuan + '\\';
-                    it.nextChar();
-                } else if (it.peekChar() == '"') {
-                    it.nextChar();
-                    chuan = chuan + '"';
+        char now;
+        while (i > 0) {
+            now = it.nextChar();
+            if (pre == '\\') {
+                if (now == '\\') {
+                    stringLiteral += '\\';
+                    pre = ' ';
+                    i--;
                 }
-            } 
-            else if (it.peekChar() == '"') {
-                chuan = chuan + look;
-                break;
-            } 
-            else chuan = chuan + look;
+                else if (now == 'n') {
+                    stringLiteral += '\n';
+                    pre = 'n';
+                    i--;
+                }
+                else if (now == '"') {
+                    stringLiteral += '"';
+                    pre = '"';
+                    i--;
+                }
+                else if(now == '\''){
+                    stringLiteral += '\'';
+                    pre = '\'';
+                    i--;
+                }
+            }
+            else {
+                if (now == '"') break;
+                else if (now != '\\') stringLiteral += now;
+                pre = now;
+                i--;
+            }
         }
-        return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
+        return new Token(TokenType.STRING_LITERAL, stringLiteral, it.previousPos(), it.currentPos());
     }
+    /**字符串常量*/
+    //private Token lexString() throws TokenizeError {
+     //   String chuan="";
+     //   it.nextChar();
+     //   int i = 65535;
+        //\的数量
+     //   while(i>0) {
+      //      char look = it.nextChar();
+     //       System.out.println(look + "\n");
+     //       i--;
+     //       if (look == '\\') {
+                //转义
+      //          if (it.peekChar() == 'n') {
+       //             it.nextChar();
+      //              chuan = chuan + '\n';
+      //          } else if (it.peekChar() == '\'') {
+      //              it.nextChar();
+      //              chuan = chuan + '\'';
+       //         } else if (it.peekChar() == '\\') {
+      //              chuan = chuan + '\\';
+       //             it.nextChar();
+      //          } else if (it.peekChar() == '"') {
+      //              it.nextChar();
+      //              chuan = chuan + '"';
+      //          }
+      //      }
+       //     else if (it.peekChar() == '"') {
+      //          chuan = chuan + look;
+       //         it.nextChar();
+       //         break;
+       //     }
+      //      else chuan = chuan + look;
+       // }
+      //  return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
+   // }
 
 
 }
