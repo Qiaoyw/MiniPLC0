@@ -142,6 +142,11 @@ public class Tokenizer {
                 return new Token(TokenType.COLON, ':', it.previousPos(), it.currentPos());
             case ';':
                 return new Token(TokenType.SEMICOLON, ';', it.previousPos(), it.currentPos());
+            case '_':
+                return new Token(TokenType.UNDERLINE, '_', it.previousPos(), it.currentPos());
+            case '\\':
+                return new Token(TokenType.GANG, '\\', it.previousPos(), it.currentPos());
+
             //减号  ->
             case '-':
                 if(it.peekChar()=='>'){
@@ -192,38 +197,31 @@ public class Tokenizer {
         it.nextChar();
         int i = 65535;
         //\的数量
-        int numZ = 0;
-        while(i>0){
-            char look=it.nextChar();
+        while(i>0) {
+            char look = it.nextChar();
+            System.out.println(look + "\n");
             i--;
-            if(look=='\\'){
-                numZ++;
-                //有一个
-                if(numZ==1){
-                    //转义
-                    if(it.peekChar()=='"'||it.peekChar()=='\'') {
-                        numZ=0;
-                        chuan=chuan+it.nextChar();
-                    }
-                    else chuan=chuan+look;
+            if (look == '\\') {
+                //转义
+                if (it.peekChar() == 'n') {
+                    it.nextChar();
+                    chuan = chuan + '\n';
+                } else if (it.peekChar() == '\'') {
+                    it.nextChar();
+                    chuan = chuan + '\'';
+                } else if (it.peekChar() == '\\') {
+                    chuan = chuan + '\\';
+                    it.nextChar();
+                } else if (it.peekChar() == '"') {
+                    it.nextChar();
+                    chuan = chuan + '"';
                 }
-                else numZ=0;
-            }
-            else if(look=='"'){
+            } 
+            else if (it.peekChar() == '"') {
+                chuan = chuan + look;
                 break;
-            }
-            else chuan=chuan+look;
-
-            //else{
-            //    if(chuan.charAt(chuan.length()-1)=='\\'){
-            //        if(chuan.length()>1&&chuan.charAt(chuan.length()-2)=='\\'){
-            //            chuan=chuan+it.nextChar();
-            //            break;
-            //        }
-            //    }
-            //    else{
-            //        break;
-            //    }
+            } 
+            else chuan = chuan + look;
         }
         return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
     }
