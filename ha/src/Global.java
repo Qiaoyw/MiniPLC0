@@ -42,4 +42,14 @@ public class Global {
     public void setItems(String items) {
         this.items = items;
     }
+
+    @Override
+    public String toString() {
+        return "Global{" +
+                "id=" + id +
+                "is_Const=" + is_const +
+                ", count=" + count +
+                ", items=" + items +
+                '}';
+    }
 }
