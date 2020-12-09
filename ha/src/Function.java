@@ -63,4 +63,16 @@ public class Function {
     public void setBody(List<Instruction> body) {
         this.body = body;
     }
+
+    @Override
+    public String toString() {
+        return "Function{\n" +
+                "   name=" + name +
+                ",\n    id=" + id +
+                ",\n    retSlots=" + returnSlots+
+                ",\n    paramSlots=" + paramSlots +
+                ",\n    locSlots=" + localSlots +
+                ",\n    body=" + body +
+                '}';
+    }
 }
