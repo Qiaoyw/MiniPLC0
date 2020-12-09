@@ -363,6 +363,7 @@ public class Analyser {
         function.localSlots=Lnum;
         function.body=instructionmap;
         function.name=Gnum;
+        function.id=Fnum;
 
         //验证当前函数是否有return语句
         //如果当前函数返回void，则可以没有return语句
