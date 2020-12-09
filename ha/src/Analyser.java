@@ -342,8 +342,7 @@ public class Analyser {
         //函数返回值类型
         Token ty=analyseTy();
         String back=ty.getValueString();
-        if(back.equals("int")) returnSlot=1;
-        else if(back.equals("double")) returnSlot=2;
+        if(back.equals("int")||back.equals("double")) returnSlot=1;
 
         //加入符号表,存当前函数
         Symbol fun=new Symbol(name,"fun",n,LEVEL,back);
@@ -363,6 +362,7 @@ public class Analyser {
 
         function.localSlots=Lnum;
         function.body=instructionmap;
+        function.name=Gnum;
 
         //验证当前函数是否有return语句
         //如果当前函数返回void，则可以没有return语句
