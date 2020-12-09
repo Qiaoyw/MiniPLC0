@@ -789,7 +789,7 @@ public class Analyser {
 
         //if里面有返回值
         //z最后一个是返回值
-        if (instructionmap.get(positionR -1).getOpt().equals("ret")) {
+        if (instructionmap.get(positionR-1).getOpt()==Operation.ret) {
             //直接跳到else
             //偏移量
             int off=positionR-positionL;
@@ -827,6 +827,7 @@ public class Analyser {
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
                 else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+                
             }
             //跳过else的偏移
             off = instructionmap.size() -zhong ;
