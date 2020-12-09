@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class App{
     public static void main(String[] args) throws CompileError, IOException {
-        InputStream input = new FileInputStream("input.txt");
+        InputStream input = new FileInputStream(args[0]);
         Scanner scanner;
         scanner = new Scanner(input);
         StringIter iter = new StringIter(scanner);
@@ -23,7 +23,7 @@ public class App{
         for (Function function : analyzer.functionmap) {
             System.out.println(function);
         }
-        
+
         //输出格式转换
         Target target = new Target(analyzer.globalmap, analyzer.functionmap);
         List<Byte>  result= target.out();
@@ -32,8 +32,8 @@ public class App{
 
 
         //输出
-  DataOutputStream output = new DataOutputStream(new FileOutputStream(new File("output")));
-        //DataOutputStream output = new DataOutputStream(new FileOutputStream(new File(args[1])));
+         //DataOutputStream output = new DataOutputStream(new FileOutputStream(new File("output")));
+        DataOutputStream output = new DataOutputStream(new FileOutputStream(new File(args[1])));
         output.write(chu);
     }
 
