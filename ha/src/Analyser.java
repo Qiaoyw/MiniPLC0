@@ -171,16 +171,18 @@ public class Analyser {
         if(mainId == -1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         Symbol main = symbolmap.get(mainId);
+        int findmain=findIDbyNameId(mainId);
+        if(findmain==-1) findmain=Fnum;
 
         if (main.back.equals("void")) {
             //没有返回值则分配0个地址
             init.add(new Instruction(Operation.stackalloc,0x1a, 0));
-            init.add(new Instruction(Operation.call,0x48,findIDbyNameId(mainId)));
+            init.add(new Instruction(Operation.call,0x48,findmain));
         }
         else {
             //有返回值分配一个空间
             init.add(new Instruction(Operation.stackalloc,0x1a, 1));
-            init.add(new Instruction(Operation.call,0x48,findIDbyNameId(mainId)));
+            init.add(new Instruction(Operation.call,0x48,findmain));
             init.add(new Instruction(Operation.popn,0x03,1));
         }
         //向全局变量填入口程序_start
