@@ -15,6 +15,14 @@ public class Target {
         this.functionmap= functionmap;
     }
 
+    private void PutIn(int x,int length){
+        for(int i = length-1 ; i >=0; i--){
+            //每次得到前面的8位
+            int last = x >> (i * 8) & 0xFF;
+            target.add((byte) last);
+        }
+    }
+
     private void PutIn(int x){
         int length=4;
         for(int i = length-1 ; i >=0; i--){
@@ -87,7 +95,7 @@ public class Target {
     }
     public void outFunction(Function function){
         //name
-        PutIn(function.getId());
+        PutIn(function.name);
         //ret_slots
         PutIn(function.returnSlots);
         //param_slots
@@ -102,7 +110,7 @@ public class Target {
         for(Instruction instruction:ins){
             //指令
             int op = instruction.out;
-            PutIn(op);
+            PutIn(op,1);
             //操作数
             if(instruction.x!= null){
                 //只有push的操作数是64位
