@@ -191,42 +191,40 @@ public class Tokenizer {
         }
     }
 
-  
+
     /**字符串常量*/
-    //private Token lexString() throws TokenizeError {
-     //   String chuan="";
-     //   it.nextChar();
-     //   int i = 65535;
+    private Token lexString() throws TokenizeError {
+        String chuan="";
+        it.nextChar();
+        int i = 65535;
         //\的数量
-     //   while(i>0) {
-      //      char look = it.nextChar();
-     //       System.out.println(look + "\n");
-     //       i--;
-     //       if (look == '\\') {
+        while(i>0) {
+            char look = it.nextChar();
+            System.out.println(look + "\n");
+            i--;
+           if (look == '\\') {
                 //转义
-      //          if (it.peekChar() == 'n') {
-       //             it.nextChar();
-      //              chuan = chuan + '\n';
-      //          } else if (it.peekChar() == '\'') {
-      //              it.nextChar();
-      //              chuan = chuan + '\'';
-       //         } else if (it.peekChar() == '\\') {
-      //              chuan = chuan + '\\';
-       //             it.nextChar();
-      //          } else if (it.peekChar() == '"') {
-      //              it.nextChar();
-      //              chuan = chuan + '"';
-      //          }
-      //      }
-       //     else if (it.peekChar() == '"') {
-      //          chuan = chuan + look;
-       //         it.nextChar();
-       //         break;
-       //     }
-      //      else chuan = chuan + look;
-       // }
-      //  return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
-   // }
+                if (it.peekChar() == 'n') {
+                    it.nextChar();
+                    chuan = chuan + '\n';
+                } else if (it.peekChar() == '\'') {
+                    it.nextChar();
+                    chuan = chuan + '\'';
+              } else if (it.peekChar() == '\\') {
+                    chuan = chuan + '\\';
+                    it.nextChar();
+                } else if (it.peekChar() == '"') {
+                    it.nextChar();
+                    chuan = chuan + '"';
+                }
+           }
+           else if (look == '"') {
+                break;
+            }
+            else chuan = chuan + look;
+        }
+        return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
+    }
 
 
 }
