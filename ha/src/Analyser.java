@@ -815,7 +815,7 @@ public class Analyser {
             int zhong=instructionmap.size();
             //再算偏移
             int off =  zhong-positionL;
-            jumptoEnd.setX(off);
+            jumptoElse.setX(off);
 
             if(check(TokenType.ELSE_KW)){
                 expect(TokenType.ELSE_KW);
@@ -827,7 +827,7 @@ public class Analyser {
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
                 else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
-                
+
             }
             //跳过else的偏移
             off = instructionmap.size() -zhong ;
@@ -864,8 +864,6 @@ public class Analyser {
         jumptoWhile.setX(whileStart - whileEnd);
 
         jumptoEnd.setX(whileEnd - positionL);
-        System.out.println("第一个r" + (whileEnd - positionL));
-
     }
 
     private void analyseReturnStmt() throws CompileError {
