@@ -191,45 +191,7 @@ public class Tokenizer {
         }
     }
 
-    //字符串常量
-    private Token lexString() throws TokenizeError {
-        String stringLiteral = "" ;
-        char pre = it.nextChar();
-        int i = 65535;
-        char now;
-        while (i > 0) {
-            now = it.nextChar();
-            if (pre == '\\') {
-                if (now == '\\') {
-                    stringLiteral += '\\';
-                    pre = ' ';
-                    i--;
-                }
-                else if (now == 'n') {
-                    stringLiteral += '\n';
-                    pre = 'n';
-                    i--;
-                }
-                else if (now == '"') {
-                    stringLiteral += '"';
-                    pre = '"';
-                    i--;
-                }
-                else if(now == '\''){
-                    stringLiteral += '\'';
-                    pre = '\'';
-                    i--;
-                }
-            }
-            else {
-                if (now == '"') break;
-                else if (now != '\\') stringLiteral += now;
-                pre = now;
-                i--;
-            }
-        }
-        return new Token(TokenType.STRING_LITERAL, stringLiteral, it.previousPos(), it.currentPos());
-    }
+  
     /**字符串常量*/
     //private Token lexString() throws TokenizeError {
      //   String chuan="";
