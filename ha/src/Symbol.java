@@ -23,7 +23,6 @@ public class Symbol {
     int funid;
     //参数编号
     int paraid;
-    
     //参数列表？
     List<Symbol> param = new ArrayList<>();
 
