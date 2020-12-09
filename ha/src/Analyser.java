@@ -786,10 +786,10 @@ public class Analyser {
             //放入地址中
             instructionmap.add(new Instruction(Operation.store_64,0x17,null));
         }
-        
+
         //如果返回值不一样，就报错
         if(!backType.equals(functionNow.getBack())) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
-        
+
         expect(TokenType.SEMICOLON);
         //ret
         instructionmap.add(new Instruction(Operation.ret,0x49,null));
@@ -874,7 +874,6 @@ public class Analyser {
             //局部变量减少
             n = symbolmap.get(i);
             if (n.level==LEVEL) symbolmap.remove(i);
-            Lnum--;
         }
         //System.out.println(symbolmap);
         //System.out.println(LEVEL);
