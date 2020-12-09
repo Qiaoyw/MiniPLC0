@@ -127,11 +127,14 @@ public enum TokenType {
     SEMICOLON,
     /**下划线**/
     UNDERLINE,
+    /**右斜杠**/
+    GANG,
     //扩充c0
     /**
      * 注释
      */
     COMMENT;
+
 
 
     @Override
