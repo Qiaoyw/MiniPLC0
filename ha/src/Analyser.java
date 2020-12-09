@@ -314,6 +314,7 @@ public class Analyser {
     private void analyseFunction() throws CompileError {
         //function -> 'fn' IDENT '(' function_param_list? ')' '->' ty block_stmt
         expect(TokenType.FN_KW);
+        Lnum=0;
 
         Token tt= expect(TokenType.IDENT);
         String name=tt.getValueString();
@@ -460,6 +461,9 @@ public class Analyser {
                 //常量和函数不能在等号左边
                 if(symbol.isConst||(symbol.type.equals("fun"))) throw new AnalyzeError(ErrorCode.Break,ident.getStartPos());
                 type=analyseAssignExpr(symbol,type);
+            }
+            else {
+                analyseIdentExpr(symbol);
             }
         }
         while(check(TokenType.AS_KW)||check(TokenType.PLUS)||check(TokenType.MINUS)||check(TokenType.MUL)||check(TokenType.DIV)||check(TokenType.EQ)||check(TokenType.NEQ)||check(TokenType.LT)||check(TokenType.GT)||check(TokenType.LE)||check(TokenType.GE)){
@@ -678,11 +682,24 @@ public class Analyser {
     }
 
     /**标识符表达式*/
-    //private void analyseIdentExpr() throws CompileError {
-     //   //ident_expr -> IDENT
-     //   expect(TokenType.IDENT);
-     //
-    //}
+    private void analyseIdentExpr(Symbol symbol) throws CompileError {
+        //ident_expr -> IDENT
+        if(symbol.type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+
+        //参数
+        if(symbol.paraid!=-1&&symbol.funid!=-1){
+            Function fun= functionmap.get(symbol.funid-1);
+            //参数的位置在返回值之后
+            instructionmap.add(new Instruction(Operation.arga,0x0b, fun.returnSlots+symbol.paraid));
+        }
+        //局部变量
+        else if(symbol.level!= 1) instructionmap.add(new Instruction(Operation.loca,0x0a,symbol.Lid));
+            //如果该ident是全局变量
+        else instructionmap.add(new Instruction(Operation.globa,0x0c,symbol.Gid));
+
+        instructionmap.add(new Instruction(Operation.load,0x13, null));
+
+    }
 
     //??改完了
     /**括号表达式*/
