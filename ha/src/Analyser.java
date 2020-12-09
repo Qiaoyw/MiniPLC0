@@ -171,7 +171,7 @@ public class Analyser {
         if(mainId == -1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         Symbol main = symbolmap.get(mainId);
-        int findmain=findIDbyNameId(mainId-1);
+        int findmain=findIDbyName("main");
 
         if (main.back.equals("void")) {
             //没有返回值则分配0个地址
@@ -188,7 +188,7 @@ public class Analyser {
         Global global = new Global(Gnum,true, 6, "_start");
         globalmap.add(global);
         //_start加入函数表,该函数的编号为0,指令集是init
-        Function function = new Function(0,Gnum,0,0,0,init);
+        Function function = new Function(0,Gnum,"_start",0,0,0,init);
         //添加到索引为0的地方,后面后移
         functionmap.add(0,function);
         Gnum++;
@@ -352,7 +352,7 @@ public class Analyser {
         symbolmap.add(fun);
 
         //加入函数表，为了输出
-        Function function = new Function(Fnum,Gnum,returnSlot,n.size(),0,null);
+        Function function = new Function(Fnum,Gnum,name,returnSlot,n.size(),0,null);
         functionmap.add(function);
 
         analyseBlockStmt();
@@ -628,8 +628,7 @@ public class Analyser {
         }
         else{
             //一般函数，找寻函数id
-            int nameid=SearchByNameExist(function.name);
-            int id= findIDbyNameId(nameid-1);
+            int id= findIDbyName(function.name);
             //自己调自己
             if(id==-1) id=Fnum;
             ins = new Instruction(Operation.call,0x48,id);
@@ -983,11 +982,11 @@ public class Analyser {
     }
 
     /**在函数表通过全局编号找函数编号**/
-    private int findIDbyNameId(int nameid){
+    private int findIDbyName(String name){
         Function n;
         for(int i = functionmap.size()-1;i >=0;i--) {
             n = functionmap.get(i);
-            if (n.name==nameid) return n.id;
+            if (n.name1.equals(name)) return n.id;
         }
         return -1;
     }
