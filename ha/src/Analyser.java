@@ -776,12 +776,23 @@ public class Analyser {
         //return_stmt -> 'return' expr? ';'
         expect(TokenType.RETURN_KW);
         String backType="void";
-        if(!check(TokenType.SEMICOLON)){
-            backType=analyseExpr();
+        //加载返回地址
+        if(!functionNow.getBack().equals("void")){
+            instructionmap.add(new Instruction(Operation.arga,0x0b,0));
+            if(!check(TokenType.SEMICOLON)){
+                backType=analyseExpr();
+                popZ();
+            }
+            //放入地址中
+            instructionmap.add(new Instruction(Operation.store_64,0x17,null));
         }
+        
         //如果返回值不一样，就报错
         if(!backType.equals(functionNow.getBack())) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+        
         expect(TokenType.SEMICOLON);
+        //ret
+        instructionmap.add(new Instruction(Operation.ret,0x49,null));
     }
     /**代码块*/
     private void analyseBlockStmt() throws CompileError {
