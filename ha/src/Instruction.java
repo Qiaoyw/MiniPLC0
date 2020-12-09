@@ -42,4 +42,9 @@ public class Instruction {
         this.x = x;
     }
 
+    @Override
+    public String toString() {
+            return "" + opt + " " + x + '\n';
+    }
+    
 }
