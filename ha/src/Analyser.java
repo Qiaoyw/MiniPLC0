@@ -171,8 +171,7 @@ public class Analyser {
         if(mainId == -1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         Symbol main = symbolmap.get(mainId);
-        int findmain=findIDbyNameId(mainId);
-        if(findmain==-1) findmain=Fnum-1;
+        int findmain=findIDbyNameId(mainId-1);
 
         if (main.back.equals("void")) {
             //没有返回值则分配0个地址
@@ -363,7 +362,6 @@ public class Analyser {
         function.localSlots=Lnum;
         function.body=instructionmap;
         function.name=Gnum;
-        function.id=Fnum;
 
         //验证当前函数是否有return语句
         //如果当前函数返回void，则可以没有return语句
@@ -631,7 +629,7 @@ public class Analyser {
         else{
             //一般函数，找寻函数id
             int nameid=SearchByNameExist(function.name);
-            int id= findIDbyNameId(nameid);
+            int id= findIDbyNameId(nameid-1);
             //自己调自己
             if(id==-1) id=Fnum;
             ins = new Instruction(Operation.call,0x48,id);
