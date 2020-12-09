@@ -221,7 +221,7 @@ public class Analyser {
         //加符号表
         int k=SearchByNameAdd(name);
         //System.out.println("\n"+k);
-        if(k==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL,Lnum,Gnum,-1,-1));
+        if(k==-1)  symbolmap.add(new Symbol(name,type,false,LEVEL,Lnum,Gnum,-1,-1,null));
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         //赋值才需要取地址
@@ -277,7 +277,7 @@ public class Analyser {
         }
 
         //不重复就放进去
-        if(SearchByNameAdd(name)==-1) symbolmap.add(new Symbol(name,type,true,LEVEL,Lnum,Gnum,-1,-1));
+        if(SearchByNameAdd(name)==-1) symbolmap.add(new Symbol(name,type,true,LEVEL,Lnum,Gnum,-1,-1,null));
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         expect(TokenType.ASSIGN);
@@ -346,13 +346,19 @@ public class Analyser {
         //System.out.println(name+LEVEL);
         functionNow=fun;
         symbolmap.add(fun);
-
-        analyseBlockStmt();
-        //局部变量个数分析完了才能写出来
-
+        
         //加入函数表，为了输出
-        Function function = new Function(Fnum,Gnum,returnSlot,n.size(),Lnum,instructionmap);
+        Function function = new Function(Fnum,Gnum,returnSlot,n.size(),0,null);
         functionmap.add(function);
+        
+        analyseBlockStmt();
+        
+        //局部变量个数分析完了才能写出来
+       
+        function.localSlots=Lnum;
+        function.body=instructionmap;
+      
+        
 
         //加入全局变量量表
         Global global = new Global(Gnum,true,name.length(),name);
@@ -393,7 +399,7 @@ public class Analyser {
 
         //?要给参数编号么?
         int level=LEVEL+1;
-        Symbol param=new Symbol(name,type,isConst,level,-1,-1,Fnum,paraid);
+        Symbol param=new Symbol(name,type,isConst,level,-1,-1,Fnum,paraid,);
         //System.out.println(name+level);
         //没变量会跟参数重名
         symbolmap.add(param);
@@ -521,8 +527,8 @@ public class Analyser {
         //l_expr已经判断过了,传进来
         expect(TokenType.ASSIGN);
         //参数
-        if(symbol.Lid==-1){
-            Function fun= functionmap.get(symbol.Lid);
+        if(symbol.paraid!=-1&&symbol.funid!=-1){
+            Function fun= functionmap.get(symbol.funid-1);
             //参数的位置在返回值之后
             instructionmap.add(new Instruction(Operation.arga,0x0b, fun.returnSlots+symbol.paraid));
         }
@@ -746,6 +752,8 @@ public class Analyser {
 
         //执行后指令位置
         int positionR=instructionmap.size();
+
+        //if里面有返回值
 
         //偏移量
         int off=positionR-positionL;
