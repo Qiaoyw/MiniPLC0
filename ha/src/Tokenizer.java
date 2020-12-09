@@ -54,6 +54,9 @@ public class Tokenizer {
         else if (peek=='\\') {
             return lexString();
         }
+        else if (peek=='|') {
+            return lexString();
+        }
         /**运算符号   注释*/
         else {
             return lexOtherOrUnknown();
@@ -139,11 +142,6 @@ public class Tokenizer {
                 return new Token(TokenType.COLON, ':', it.previousPos(), it.currentPos());
             case ';':
                 return new Token(TokenType.SEMICOLON, ';', it.previousPos(), it.currentPos());
-            case '_':
-                return new Token(TokenType.UNDERLINE, '_', it.previousPos(), it.currentPos());
-            case '\\':
-                return new Token(TokenType.GANG, '\\', it.previousPos(), it.currentPos());
-
             //减号  ->
             case '-':
                 if(it.peekChar()=='>'){
