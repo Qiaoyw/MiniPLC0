@@ -172,7 +172,7 @@ public class Analyser {
 
         Symbol main = symbolmap.get(mainId);
         int findmain=findIDbyNameId(mainId);
-        if(findmain==-1) findmain=Fnum;
+        if(findmain==-1) findmain=Fnum-1;
 
         if (main.back.equals("void")) {
             //没有返回值则分配0个地址
@@ -775,8 +775,9 @@ public class Analyser {
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
 
         instructionmap.add(new Instruction(Operation.br_t,0x43, 1));
-        //无条件跳转
-        instructionmap.add(new Instruction(Operation.br,0x41, 0));
+        //无条件跳转到else
+        Instruction jumptoElse=new Instruction(Operation.br,0x41, 0);
+        instructionmap.add(jumptoElse);
 
         //执行前指令位置
         int positionL=instructionmap.size();
@@ -787,23 +788,83 @@ public class Analyser {
         int positionR=instructionmap.size();
 
         //if里面有返回值
+        //z最后一个是返回值
+        if (instructionmap.get(positionR -1).getOpt().equals("ret")) {
+            //直接跳到else
+            //偏移量
+            int off=positionR-positionL;
+            jumptoElse.setX(off);
 
-        //偏移量
-        int off=positionR-positionL;
-
-
-        if(check(TokenType.ELSE_KW)){
-            expect(TokenType.ELSE_KW);
-            if(check(TokenType.L_BRACE)) analyseBlockStmt();
-            else if(check(TokenType.IF_KW)) analyseIfStmt();
-            else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+            if(check(TokenType.ELSE_KW)){
+                expect(TokenType.ELSE_KW);
+                if(check(TokenType.L_BRACE)){
+                    analyseBlockStmt();
+                    //if里返回，不用跳过else，直接返回即可
+                    instructionmap.add(new Instruction(Operation.br,0x41,0));
+                }
+                else if(check(TokenType.IF_KW))
+                    analyseIfStmt();
+                else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+            }
         }
+        else {
+            //if里需要加入一句跳过else
+            Instruction jumptoEnd = new Instruction(Operation.br,0x41,null);
+            instructionmap.add(jumptoEnd);
+
+            int zhong=instructionmap.size();
+            //再算偏移
+            int off =  zhong-positionL;
+            jumptoEnd.setX(off);
+
+            if(check(TokenType.ELSE_KW)){
+                expect(TokenType.ELSE_KW);
+                if(check(TokenType.L_BRACE)){
+                    analyseBlockStmt();
+                    //else最后需要加一个跳转
+                    instructionmap.add(new Instruction(Operation.br,0x41,0));
+                }
+                else if(check(TokenType.IF_KW))
+                    analyseIfStmt();
+                else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+            }
+            //跳过else的偏移
+            off = instructionmap.size() -zhong ;
+            jumptoEnd.setX(off);
+        }
+
     }
     private void analyseWhileStmt() throws CompileError {
         //while_stmt -> 'while' expr block_stmt
         expect(TokenType.WHILE_KW);
-        analyseExpr();
+        //先找到起始位置
+        instructionmap.add(new Instruction(Operation.br,0x41,0));
+        int whileStart = instructionmap.size();
+
+        String type=analyseExpr();
+        if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
+        popZ();
+
+        //真的就执行
+        instructionmap.add(new Instruction(Operation.br_t,0x43,1));
+        //无条件跳转，准备跳过while
+        Instruction jumptoEnd = new Instruction(Operation.br,0x41,0);
+        instructionmap.add(jumptoEnd);
+
+        int positionL = instructionmap.size();
+
         analyseBlockStmt();
+
+        //跳回while
+        Instruction jumptoWhile = new Instruction(Operation.br,0x41,0);
+        instructionmap.add(jumptoWhile);
+
+        int whileEnd = instructionmap.size();
+        jumptoWhile.setX(whileStart - whileEnd);
+
+        jumptoEnd.setX(whileEnd - positionL);
+        System.out.println("第一个r" + (whileEnd - positionL));
+
     }
 
     private void analyseReturnStmt() throws CompileError {
