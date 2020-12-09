@@ -47,6 +47,13 @@ public class Tokenizer {
         else if (peek=='\'') {
             return lexString();
         }
+        /**下划线*/
+        else if (peek=='_') {
+            return lexString();
+        }
+        else if (peek=='\\') {
+            return lexString();
+        }
         /**运算符号   注释*/
         else {
             return lexOtherOrUnknown();
@@ -185,10 +192,12 @@ public class Tokenizer {
     private Token lexString() throws TokenizeError {
         String chuan="";
         it.nextChar();
+        int i = 65535;
         //\的数量
         int numZ = 0;
-        while(true){
+        while(i>0){
             char look=it.nextChar();
+            i--;
             if(look=='\\'){
                 numZ++;
                 //有一个
