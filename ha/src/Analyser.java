@@ -16,6 +16,9 @@ public class Analyser {
     /** 符号表 */
     List<Symbol> symbolmap=new ArrayList<>();
 
+    /**上一个返回的函数**/
+    Symbol ReturnNow;
+
     /**全局变量表**/
     List<Global> globalmap=new ArrayList<>();
     /**全局变量个数**/
@@ -359,6 +362,15 @@ public class Analyser {
         function.localSlots=Lnum;
         function.body=instructionmap;
 
+        //验证当前函数是否有return语句
+        //如果当前函数返回void，则可以没有return语句
+        //即判断上一个return的函数和当前函数是否一致
+        //不一致则报错
+        if(back.equals("void"))
+            instructionmap.add(new Instruction(Operation.ret,0x49, null));
+        else if(!ReturnNow.getName().equals(functionNow.getName())){
+            throw new AnalyzeError(ErrorCode.Break, peekedToken.getStartPos());
+        }
 
 
         //加入全局变量量表
@@ -789,6 +801,7 @@ public class Analyser {
         analyseExpr();
         analyseBlockStmt();
     }
+
     private void analyseReturnStmt() throws CompileError {
         //return_stmt -> 'return' expr? ';'
         expect(TokenType.RETURN_KW);
@@ -810,6 +823,7 @@ public class Analyser {
         expect(TokenType.SEMICOLON);
         //ret
         instructionmap.add(new Instruction(Operation.ret,0x49,null));
+        ReturnNow=functionNow;
     }
     /**代码块*/
     private void analyseBlockStmt() throws CompileError {
