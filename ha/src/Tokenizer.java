@@ -196,7 +196,7 @@ public class Tokenizer {
     private Token lexString() throws TokenizeError {
         String chuan="";
         it.nextChar();
-        int i = 65535;
+        int i = 6553;
         //\的数量
         while(i>0) {
             char look = it.nextChar();
