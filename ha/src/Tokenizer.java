@@ -201,6 +201,7 @@ public class Tokenizer {
             else if(look=='"'){
                 break;
             }
+            else chuan=chuan+look;
 
             //else{
             //    if(chuan.charAt(chuan.length()-1)=='\\'){
@@ -212,7 +213,6 @@ public class Tokenizer {
             //    else{
             //        break;
             //    }
-
         }
         return new Token(TokenType.STRING_LITERAL, chuan, it.previousPos(), it.currentPos());
     }
