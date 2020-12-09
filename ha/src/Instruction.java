@@ -44,7 +44,7 @@ public class Instruction {
 
     @Override
     public String toString() {
-            return "" + opt + " " + x + '\n';
+            return "" + opt + " " +out+" "+ x + '\n';
     }
-    
+
 }
