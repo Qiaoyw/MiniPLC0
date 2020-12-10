@@ -5,6 +5,7 @@ public class Instruction {
     //指令的十六进制编号
     int out;
     long x;
+    double f;
 
     public Instruction(int out,Operation opt) {
         this.opt = opt;
@@ -17,6 +18,11 @@ public class Instruction {
         this.opt = opt;
         this.out=out;
         this.x = x;
+    }
+    public Instruction(int out,Operation opt, double x) {
+        this.opt = opt;
+        this.out=out;
+        this.f = f;
     }
 
 
