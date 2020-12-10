@@ -4,7 +4,7 @@ public class Instruction {
     private Operation opt;
     //指令的十六进制编号
     int out;
-    Long x;
+    long x;
     double y;
 
     public Instruction(int out,Operation opt) {
@@ -14,7 +14,7 @@ public class Instruction {
     }
 
 
-    public Instruction(Operation opt,int out,Long x) {
+    public Instruction(Operation opt,int out,long x) {
         this.opt = opt;
         this.out=out;
         this.x = x;
