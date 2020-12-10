@@ -837,7 +837,7 @@ public class Analyser {
                 if(check(TokenType.L_BRACE)){
                     analyseBlockStmt();
                     //else最后需要加一个跳转
-                    instructionmap.add(new Instruction(Operation.br,0x41,0));
+                    //instructionmap.add(new Instruction(Operation.br,0x41,0));
                 }
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
