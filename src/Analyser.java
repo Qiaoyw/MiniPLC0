@@ -815,8 +815,8 @@ public class Analyser {
                 if(check(TokenType.L_BRACE)){
                     analyseBlockStmt();
                     //if里返回，不用跳过else，直接返回即可
-                    if (!instructionmap.get(instructionmap.size() -1).getOpt().equals("ret"))
-                        instructionmap.add(new Instruction(Operation.br,0x41,0));
+                    //if (!instructionmap.get(positionR -1).getOpt().equals("ret"))
+                     //   instructionmap.add(new Instruction(Operation.br,0x41,0));
                 }
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
