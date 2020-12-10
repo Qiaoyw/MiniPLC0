@@ -70,18 +70,21 @@ public class Tokenizer {
         //整数是0，浮点数1
         int type=0;
         double f=0.0;
-        long m=0;
+        long Int=0;
         while(Character.isDigit(it.peekChar())||it.peekChar()=='.'){
             if(it.peekChar()=='.') type=1;
             shu=shu+it.nextChar();
         }
         if(type==1){
+            if(it.peekChar()=='E'||it.peekChar()=='e') shu=shu+it.nextChar();
+            if(it.peekChar()=='+'||it.peekChar()=='-') shu=shu+it.nextChar();
+            while(Character.isDigit(it.peekChar())) shu=shu+it.nextChar();
             f=Double.parseDouble(shu);
             return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
         }
         else {
-            m=Long.parseLong(shu);
-            return new Token(TokenType.UINT_LITERAL,m, it.previousPos(), it.currentPos());
+            Int=Long.parseLong(shu);
+            return new Token(TokenType.UINT_LITERAL,Int, it.previousPos(), it.currentPos());
         }
     }
 
@@ -172,7 +175,7 @@ public class Tokenizer {
                 }
                 throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
 
-            //小于  小于等于
+                //小于  小于等于
             case '<':
                 if(it.peekChar()=='='){
                     it.nextChar();
@@ -187,7 +190,7 @@ public class Tokenizer {
                 }
                 return new Token(TokenType.GT, '>', it.previousPos(), it.currentPos());
 
-                //出发还是注释
+            //出发还是注释
             case '/':
                 if(it.peekChar()=='/'){
                     it.nextChar();
@@ -260,7 +263,7 @@ public class Tokenizer {
             char look = it.nextChar();
             System.out.println(look + "\n");
             i--;
-           if (look == '\\') {
+            if (look == '\\') {
                 //转义
                 if (it.peekChar() == 'n') {
                     it.nextChar();
@@ -268,7 +271,7 @@ public class Tokenizer {
                 } else if (it.peekChar() == '\'') {
                     it.nextChar();
                     chuan = chuan + '\'';
-              } else if (it.peekChar() == '\\') {
+                } else if (it.peekChar() == '\\') {
                     chuan = chuan + '\\';
                     it.nextChar();
                 } else if (it.peekChar() == '"') {
@@ -283,8 +286,8 @@ public class Tokenizer {
                     it.nextChar();
                     chuan = chuan + '\r';
                 }
-           }
-           else if (look == '"') {
+            }
+            else if (look == '"') {
                 break;
             }
             else chuan = chuan + look;
