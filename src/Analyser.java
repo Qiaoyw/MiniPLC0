@@ -578,11 +578,11 @@ public class Analyser {
         Token ty=analyseTy();
         String type=(String)ty.getValue();
         if(typeL.equals("int")&&type.equals("double")) {
-            Instruction ins = new Instruction(Operation.ftoi,0x37,-1);
+            Instruction ins = new Instruction(Operation.itof,0x37,-1);
             instructionmap.add(ins);
         }
         else if(typeL.equals("double")&&type.equals("int")) {
-            Instruction ins = new Instruction(Operation.itof,0x36,-1);
+            Instruction ins = new Instruction(Operation.ftoi,0x36,-1);
             instructionmap.add(ins);
         }
         //只能是int 和double
