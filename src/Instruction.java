@@ -34,11 +34,11 @@ public class Instruction {
         this.opt = opt;
     }
 
-    public Integer getX() {
+    public long getX() {
         return x;
     }
 
-    public void setX(Integer x) {
+    public void setX(long x) {
         this.x = x;
     }
 
