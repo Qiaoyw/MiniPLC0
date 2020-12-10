@@ -595,10 +595,12 @@ public class Analyser {
         type=analyseExpr();
 
         //把函数里没有运算的符号弹出来
-        while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
+
+        while((!stack.empty())&&stack.peek()!=TokenType.L_PAREN) {
             TokenType tt=stack.pop();
             OpFunction.OpInstruction(tt,instructionmap,type);
         }
+
         //参数类型不同
         if(!param.get(position).type.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         position++;
@@ -653,7 +655,7 @@ public class Analyser {
         }
         expect(TokenType.R_PAREN);
 
-        stack.pop();
+        if(!stack.empty())stack.pop();
 
         //最后压入call命令
         instructionmap.add(ins);
@@ -666,7 +668,7 @@ public class Analyser {
         //literal_expr -> UINT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL|CHAR_LITERAL
         if(check(TokenType.UINT_LITERAL)){
             Token number=next();
-            int num=(int)number.getValue();
+            long num=(long)number.getValue();
             //把常数压入栈
             Instruction ins = new Instruction(Operation.push,0x01,num);
             instructionmap.add(ins);
@@ -803,7 +805,7 @@ public class Analyser {
         if (instructionmap.get(positionR-1).getOpt()==Operation.ret) {
             //直接跳到else
             //偏移量
-            int off=positionR-positionL;
+            long off=positionR-positionL;
             jumptoElse.setX(off);
 
             if(check(TokenType.ELSE_KW)){
@@ -825,7 +827,7 @@ public class Analyser {
 
             int zhong=instructionmap.size();
             //再算偏移
-            int off =  zhong-positionL;
+            long off =  zhong-positionL;
             jumptoElse.setX(off);
 
             if(check(TokenType.ELSE_KW)){
@@ -871,7 +873,7 @@ public class Analyser {
         Instruction jumptoWhile = new Instruction(Operation.br,0x41,0);
         instructionmap.add(jumptoWhile);
 
-        int whileEnd = instructionmap.size();
+        long whileEnd = instructionmap.size();
         jumptoWhile.setX(whileStart - whileEnd);
 
         jumptoEnd.setX(whileEnd - positionL);
