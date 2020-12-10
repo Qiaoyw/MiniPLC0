@@ -97,7 +97,7 @@ public class Target {
         //name
         PutIn(function.name);
         //ret_slots
-        PutIn(function.returnSlots);
+        PutIn((int)function.returnSlots);
         //param_slots
         PutIn(function.getParamSlots());
         //loc_slots
@@ -115,9 +115,9 @@ public class Target {
             if(instruction.x!= -1){
                 //只有push的操作数是64位
                 if(op==1)
-                    PutIn((long)instruction.getX());
-                else
                     PutIn(instruction.getX());
+                else
+                    PutIn((int)instruction.getX());
             }
         }
 
