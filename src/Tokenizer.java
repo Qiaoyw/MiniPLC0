@@ -76,8 +76,14 @@ public class Tokenizer {
             shu=shu+it.nextChar();
         }
         if(type==1){
-            f=Double.parseDouble(shu);
-            return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
+            if(it.peekChar() == 'e'||it.peekChar() == 'E'){
+                shu=shu+it.nextChar();
+                if(it.peekChar() == '+'||it.peekChar() == '-'){
+                    shu=shu+it.nextChar();
+                }
+                while(Character.isDigit(it.peekChar())) shu=shu+it.nextChar();
+            }
+            return new Token(TokenType.DOUBLE_LITERAL,Double.valueOf(shu.toString()),it.previousPos(),it.currentPos());
         }
         else {
             Int=Long.parseLong(shu);
