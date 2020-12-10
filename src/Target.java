@@ -112,7 +112,7 @@ public class Target {
             int op = instruction.out;
             PutIn(op,1);
             //操作数
-            if(instruction.x!= null){
+            if(instruction.x!= -1){
                 //只有push的操作数是64位
                 if(op==1)
                     PutIn((long)instruction.getX());
