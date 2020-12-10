@@ -22,62 +22,62 @@ public class OpFunction{
         Instruction ins;
         switch (type) {
             case PLUS:
-                ins = new Instruction(Operation.add,0x20,null);
+                ins = new Instruction(Operation.add,0x20,-1);
                 instructionsList.add(ins);
                 break;
             case MINUS:
-                ins = new Instruction(Operation.sub,0x21,null);
+                ins = new Instruction(Operation.sub,0x21,-1);
                 instructionsList.add(ins);
                 break;
             case MUL:
-                ins = new Instruction(Operation.mul,0x22,null);
+                ins = new Instruction(Operation.mul,0x22,-1);
                 instructionsList.add(ins);
                 break;
             case DIV:
-                ins = new Instruction(Operation.div,0x23,null);
+                ins = new Instruction(Operation.div,0x23,-1);
                 instructionsList.add(ins);
                 break;
             //等于,
             //??暂时只有整数的比较
             case EQ:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
                 //等于则压进去的值是0，要变为1
-                ins = new Instruction(Operation.not,0x2e,null);
+                ins = new Instruction(Operation.not,0x2e,-1);
                 instructionsList.add(ins);
                 break;
             case NEQ:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
                 break;
             case LT:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
-                ins = new Instruction(Operation.set_lt,0x39,null);
+                ins = new Instruction(Operation.set_lt,0x39,-1);
                 instructionsList.add(ins);
                 break;
             case LE:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
                 //不大于，小于等于
-                ins = new Instruction(Operation.set_gt,0x3a,null);
+                ins = new Instruction(Operation.set_gt,0x3a,-1);
                 instructionsList.add(ins);
-                ins = new Instruction(Operation.not,0x2e,null);
+                ins = new Instruction(Operation.not,0x2e,-1);
                 instructionsList.add(ins);
                 break;
             case GT:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
-                ins = new Instruction(Operation.set_gt,0x3a,null);
+                ins = new Instruction(Operation.set_gt,0x3a,-1);
                 instructionsList.add(ins);
                 break;
             case GE:
-                ins = new Instruction(Operation.cmp_i,0x30,null);
+                ins = new Instruction(Operation.cmp_i,0x30,-1);
                 instructionsList.add(ins);
                 //不小于，大于等于
-                ins = new Instruction(Operation.set_lt,0x39,null);
+                ins = new Instruction(Operation.set_lt,0x39,-1);
                 instructionsList.add(ins);
-                ins = new Instruction(Operation.not,0x2e,null);
+                ins = new Instruction(Operation.not,0x2e,-1);
                 instructionsList.add(ins);
                 break;
             default:
