@@ -537,7 +537,6 @@ public class Analyser {
         //放上面试试
         stack.push(TokenType.FAN);
         String type= analyseExpr();
-        popZ(type);
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         return type;
     }
@@ -595,7 +594,7 @@ public class Analyser {
         type=analyseExpr();
 
         //把函数里没有运算的符号弹出来
-        while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
+        while((stack.peek()!=TokenType.L_PAREN)&&(!stack.empty())) {
             TokenType tt=stack.pop();
             OpFunction.OpInstruction(tt,instructionmap,type);
         }
