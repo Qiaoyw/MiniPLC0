@@ -45,7 +45,7 @@ public class Tokenizer {
         }
         /**字符常量*/
         else if (peek=='\'') {
-            return lexString();
+            return lexChar();
         }
         /**下划线*/
         else if (peek=='_') {
@@ -197,6 +197,7 @@ public class Tokenizer {
         }
     }
 
+    /**注释**/
     //直接略过注释分析即可
     private  Token lexComment() throws TokenizeError{
         while(true){
@@ -207,8 +208,38 @@ public class Tokenizer {
     }
 
 
-
-
+    /**字符常量**/
+    private Token lexChar() throws TokenizeError {
+        //char_regular_char -> [^'\\]
+        //CHAR_LITERAL -> '\'' (char_regular_char | escape_sequence) '\''
+        char look =' ';
+        it.nextChar();
+        char now=it.nextChar();
+        if(now=='\\'){
+            //转义
+            if (it.peekChar() == 'n') {
+                it.nextChar();
+                look = '\n';
+            } else if (it.peekChar() == '\'') {
+                it.nextChar();
+                look = '\'' ;
+            } else if (it.peekChar() == '\\') {
+                look = '\\';
+                it.nextChar();
+            }else if (it.peekChar() == '"') {
+                look = '\"';
+                it.nextChar();
+            }
+            else if (it.peekChar() == 't') {
+                look = '\t';
+                it.nextChar();
+            }
+            
+        }
+        else look = now;
+        it.nextChar();
+        return new Token(TokenType.CHAR_LITERAL,look,it.previousPos(), it.currentPos());
+    }
     /**字符串常量*/
     private Token lexString() throws TokenizeError {
         String chuan="";
