@@ -664,7 +664,7 @@ public class Analyser {
     /**字面量表达式*/
     private String analyseLiteralExpr() throws CompileError {
         //literal_expr -> UINT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL|CHAR_LITERAL
-        if(check(TokenType.UINT_LITERAL)){
+        if(check(TokenType.UINT_LITERAL)||check(TokenType.CHAR_LITERAL)){
             Token number=next();
             int num=(int)number.getValue();
             //把常数压入栈
@@ -691,10 +691,6 @@ public class Analyser {
             //变量数量+1
             Gnum++;
             return "string";
-        }
-        else if(check(TokenType.CHAR_LITERAL)){
-            next();
-            return "int";
         }
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
