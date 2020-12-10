@@ -245,7 +245,7 @@ public class Analyser {
             popZ();
 
             //存值
-            ins = new Instruction(Operation.store_64,0x17,null);
+            ins = new Instruction(Operation.store_64,0x17,-1);
             instructionmap.add(ins);
         }
         expect(TokenType.SEMICOLON);
@@ -295,7 +295,7 @@ public class Analyser {
 
         expect(TokenType.SEMICOLON);
 
-        Instruction ins = new Instruction(Operation.store_64,0x17,null);
+        Instruction ins = new Instruction(Operation.store_64,0x17,-1);
         instructionmap.add(ins);
     }
 
@@ -346,7 +346,7 @@ public class Analyser {
         //加入符号表,存当前函数
         Symbol fun=new Symbol(name,"fun",n,LEVEL,back);
 
-        if(back=="void") instructionmap.add(new Instruction(Operation.ret,0x49,null));
+        if(back=="void") instructionmap.add(new Instruction(Operation.ret,0x49,-1));
         //System.out.println(name+LEVEL);
         functionNow=fun;
         symbolmap.add(fun);
@@ -368,7 +368,7 @@ public class Analyser {
         //即判断上一个return的函数和当前函数是否一致
         //不一致则报错
         if(back.equals("void"))
-            instructionmap.add(new Instruction(Operation.ret,0x49, null));
+            instructionmap.add(new Instruction(Operation.ret,0x49, -1));
         else if(!ReturnNow.getName().equals(functionNow.getName())){
             throw new AnalyzeError(ErrorCode.Break, peekedToken.getStartPos());
         }
@@ -535,7 +535,7 @@ public class Analyser {
         expect(TokenType.MINUS);
         String type= analyseExpr();
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
-        instructionmap.add(new Instruction(Operation.neg_i,0x34,null));
+        instructionmap.add(new Instruction(Operation.neg_i,0x34,-1));
         return type;
     }
 
@@ -560,7 +560,7 @@ public class Analyser {
         popZ();
         //存储
         //存储到地址中
-        Instruction ins = new Instruction(Operation.store_64,0x17,null);
+        Instruction ins = new Instruction(Operation.store_64,0x17,-1);
         instructionmap.add(ins);
         //类型是否一样
         if(typeLeft.equals(typeRight)&&(!typeLeft.equals("void"))) return "void";
@@ -722,7 +722,7 @@ public class Analyser {
             //如果该ident是全局变量
         else instructionmap.add(new Instruction(Operation.globa,0x0c,symbol.Gid));
 
-        instructionmap.add(new Instruction(Operation.load,0x13, null));
+        instructionmap.add(new Instruction(Operation.load,0x13, -1));
 
     }
 
@@ -818,7 +818,7 @@ public class Analyser {
         }
         else {
             //if里需要加入一句跳过else
-            Instruction jumptoEnd = new Instruction(Operation.br,0x41,null);
+            Instruction jumptoEnd = new Instruction(Operation.br,0x41,-1);
             instructionmap.add(jumptoEnd);
 
             int zhong=instructionmap.size();
@@ -887,7 +887,7 @@ public class Analyser {
                 popZ();
             }
             //放入地址中
-            instructionmap.add(new Instruction(Operation.store_64,0x17,null));
+            instructionmap.add(new Instruction(Operation.store_64,0x17,-1));
         }
 
         //如果返回值不一样，就报错
@@ -895,7 +895,7 @@ public class Analyser {
 
         expect(TokenType.SEMICOLON);
         //ret
-        instructionmap.add(new Instruction(Operation.ret,0x49,null));
+        instructionmap.add(new Instruction(Operation.ret,0x49,-1));
         ReturnNow=functionNow;
     }
     /**代码块*/
