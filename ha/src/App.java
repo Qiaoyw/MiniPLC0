@@ -1,4 +1,9 @@
-public static void main(String[] args) throws CompileError, IOException {
+import java.io.*;
+import java.util.List;
+import java.util.Scanner;
+
+public class App {
+    public static void main(String[] args) throws CompileError, IOException {
         File file = new File(args[0]);
         try {
             FileReader fr = new FileReader(file);
@@ -21,3 +26,6 @@ public static void main(String[] args) throws CompileError, IOException {
         //DataOutputStream output = new DataOutputStream(new FileOutputStream(new File("output")));
         DataOutputStream output = new DataOutputStream(new FileOutputStream(new File(args[1])));
     }
+
+
+}
