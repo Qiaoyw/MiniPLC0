@@ -67,18 +67,22 @@ public class Tokenizer {
     //目前只有无符号整数
     private Token lexUIntOrDouble() throws TokenizeError {
         String shu="";
+        //整数是0，浮点数1
+        int type=0;
+        double f=0.0;
         int Int=0;
-        while(Character.isDigit(it.peekChar())){
+        while(Character.isDigit(it.peekChar())||it.peekChar()=='.'){
+            if(it.peekChar()=='.') type=1;
             shu=shu+it.nextChar();
         }
-        //浮点数在这儿判断
-        Int=Integer.parseInt(shu);
-
-        // 解析存储的字符串为无符号整数
-        // 解析成功则返回无符号整数类型的token，否则返回编译错误
-        //
-        // Token 的 Value 应填写数字的值
-        return new Token(TokenType.UINT_LITERAL,Int, it.previousPos(), it.currentPos());
+        if(type==1){
+            f=Double.parseDouble(shu);
+            return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
+        }
+        else {
+            Int=Integer.parseInt(shu);
+            return new Token(TokenType.UINT_LITERAL,Int, it.previousPos(), it.currentPos());
+        }
     }
 
     /**关键字  标识符*/
