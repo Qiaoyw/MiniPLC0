@@ -70,7 +70,7 @@ public class Tokenizer {
         //整数是0，浮点数1
         int type=0;
         double f=0.0;
-        int Int=0;
+        long m=0;
         while(Character.isDigit(it.peekChar())||it.peekChar()=='.'){
             if(it.peekChar()=='.') type=1;
             shu=shu+it.nextChar();
@@ -80,8 +80,8 @@ public class Tokenizer {
             return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
         }
         else {
-            Int=Integer.parseInt(shu);
-            return new Token(TokenType.UINT_LITERAL,Int, it.previousPos(), it.currentPos());
+            m=Long.parseLong(shu);
+            return new Token(TokenType.UINT_LITERAL,m, it.previousPos(), it.currentPos());
         }
     }
 
