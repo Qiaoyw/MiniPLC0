@@ -1,5 +1,3 @@
-import java.util.regex.Pattern;
-
 public class Tokenizer {
     private StringIter it;
 
@@ -68,20 +66,23 @@ public class Tokenizer {
     /**无符号整数   浮点数*/
     //目前只有无符号整数
     private Token lexUIntOrDouble() throws TokenizeError {
-        String num = "" ;
-        while (Character.isDigit(it.peekChar()) || it.peekChar()=='.' || it.peekChar() == 'e' || it.peekChar() == 'E' || it.peekChar() == '+' || it.peekChar() == '-') {
-            num += it.nextChar();
+        String shu="";
+        //整数是0，浮点数1
+        int type=0;
+        double f;
+        long Int;
+        while(Character.isDigit(it.peekChar())||it.peekChar()=='.'){
+            if(it.peekChar()=='.') type=1;
+            shu=shu+it.nextChar();
         }
-//        String doubleLiteral="[0-9]+ . [0-9]+ ([eE] [+-]? [0-9]+)?";
-        //摸鱼版
-        String doubleLiteral = "[0-9]+.[0-9]+([eE][-+]?[0-9]+)?";
-        String uintLiteral = "[0-9]+";
-        if(Pattern.matches(uintLiteral, num))
-            return new Token(TokenType.UINT_LITERAL, Long.parseLong(num), it.previousPos(), it.currentPos());
-        else if(Pattern.matches(doubleLiteral, num))
-            return new Token(TokenType.DOUBLE_LITERAL, Double.valueOf(num.toString()), it.previousPos(), it.currentPos());
-        else
-            throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
+        if(type==1){
+            f=Double.parseDouble(shu);
+            return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
+        }
+        else {
+            Int=Long.parseLong(shu);
+            return new Token(TokenType.UINT_LITERAL,Int, it.previousPos(), it.currentPos());
+        }
     }
 
     /**关键字  标识符*/
