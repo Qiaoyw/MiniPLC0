@@ -24,7 +24,7 @@ public class OpFunction{
         Instruction ins;
         switch (type) {
             case PLUS:
-                if(calculate=="int"){
+                if(calculate.equals("int")){
                     ins = new Instruction(Operation.add_i,0x20,-1);
                     instructionsList.add(ins);
                     break;
@@ -36,7 +36,7 @@ public class OpFunction{
                 }
 
             case MINUS:
-                if(calculate=="int"){
+                if(calculate.equals("int")){
                     ins = new Instruction(Operation.sub_i,0x21,-1);
                     instructionsList.add(ins);
                     break;
@@ -47,7 +47,7 @@ public class OpFunction{
                     break;
                 }
             case MUL:
-                if(calculate=="int"){
+                if(calculate.equals("int")){
                     ins = new Instruction(Operation.mul_i,0x22,-1);
                     instructionsList.add(ins);
                     break;
@@ -59,7 +59,7 @@ public class OpFunction{
                 }
 
             case DIV:
-                if(calculate=="int"){
+                if(calculate.equals("int")){
                     ins = new Instruction(Operation.div_i,0x23,-1);
                     instructionsList.add(ins);
                     break;
@@ -71,7 +71,7 @@ public class OpFunction{
                 }
             //等于,
             case EQ:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 //等于则压进去的值是0，要变为1
@@ -79,19 +79,19 @@ public class OpFunction{
                 instructionsList.add(ins);
                 break;
             case NEQ:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 break;
             case LT:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 ins = new Instruction(Operation.set_lt,0x39,-1);
                 instructionsList.add(ins);
                 break;
             case LE:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 //不大于，小于等于
@@ -101,14 +101,14 @@ public class OpFunction{
                 instructionsList.add(ins);
                 break;
             case GT:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 ins = new Instruction(Operation.set_gt,0x3a,-1);
                 instructionsList.add(ins);
                 break;
             case GE:
-                if(calculate=="int") ins = new Instruction(Operation.cmp_i,0x30,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.cmp_i,0x30,-1);
                 else  ins = new Instruction(Operation.cmp_f,0x32,-1);
                 instructionsList.add(ins);
                 //不小于，大于等于
@@ -118,7 +118,7 @@ public class OpFunction{
                 instructionsList.add(ins);
                 break;
             case FAN:
-                if(calculate=="int") ins = new Instruction(Operation.neg_i,0x34,-1);
+                if(calculate.equals("int")) ins = new Instruction(Operation.neg_i,0x34,-1);
                 else  ins = new Instruction(Operation.neg_f,0x35,-1);
                 instructionsList.add(ins);
                 break;
