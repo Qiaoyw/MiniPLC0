@@ -649,7 +649,7 @@ public class Analyser {
             analyseCallParamList(function);
         }
         expect(TokenType.R_PAREN);
-        
+
         stack.pop();
 
         //最后压入call命令
@@ -679,7 +679,10 @@ public class Analyser {
         }
         else if(check(TokenType.DOUBLE_LITERAL)){
             Token number=next();
-            //??暂时不会判断
+            double num=(double)number.getValue();
+            //直接放进去试试
+            Instruction ins = new Instruction(0x01,Operation.push,num);
+            instructionmap.add(ins);
             return "double";
         }
         else if(check(TokenType.STRING_LITERAL)){
