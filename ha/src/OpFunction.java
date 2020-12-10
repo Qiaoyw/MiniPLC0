@@ -29,7 +29,7 @@ public class OpFunction{
                     instructionsList.add(ins);
                     break;
                 }
-                else if(calculate=="double"){
+                else{
                     ins = new Instruction(Operation.add_f,0x24,-1);
                     instructionsList.add(ins);
                     break;
@@ -41,7 +41,7 @@ public class OpFunction{
                     instructionsList.add(ins);
                     break;
                 }
-                else if(calculate=="double"){
+                else{
                     ins = new Instruction(Operation.sub_f,0x25,-1);
                     instructionsList.add(ins);
                     break;
@@ -52,7 +52,7 @@ public class OpFunction{
                     instructionsList.add(ins);
                     break;
                 }
-                else if(calculate=="double"){
+                else{
                     ins = new Instruction(Operation.mul_f,0x26,-1);
                     instructionsList.add(ins);
                     break;
@@ -64,7 +64,7 @@ public class OpFunction{
                     instructionsList.add(ins);
                     break;
                 }
-                else if(calculate=="double"){
+                else{
                     ins = new Instruction(Operation.div_f,0x27,-1);
                     instructionsList.add(ins);
                     break;
