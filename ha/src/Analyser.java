@@ -90,7 +90,7 @@ public class Analyser {
         if (peekedToken != null) {
             Token token = peekedToken;
             peekedToken = null;
-            //System.out.print(token.getValue()+ " ");
+            System.out.print(token.getValue()+ " ");
             return token;
         } else {
             return tokenizer.nextToken();
