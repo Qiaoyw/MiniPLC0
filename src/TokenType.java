@@ -125,10 +125,15 @@ public enum TokenType {
      * 分号
      */
     SEMICOLON,
+    /**取反**/
+    FAN,
     /**下划线**/
     UNDERLINE,
     /**右斜杠**/
     GANG,
+    /**竖线**/
+    LINE,
+
     //扩充c0
     /**
      * 注释
@@ -223,7 +228,7 @@ public enum TokenType {
                 return "InvalidToken";
 
 
-           }
         }
+    }
 
 }
