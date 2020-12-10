@@ -4,17 +4,17 @@ public class Instruction {
     private Operation opt;
     //指令的十六进制编号
     int out;
-    Integer x;
+    Long x;
     double y;
 
     public Instruction(int out,Operation opt) {
         this.opt = opt;
         this.out=out;
-        this.x = 0;
+        this.x = 0L;
     }
 
 
-    public Instruction(Operation opt,int out,Integer x) {
+    public Instruction(Operation opt,int out,Long x) {
         this.opt = opt;
         this.out=out;
         this.x = x;
@@ -40,11 +40,11 @@ public class Instruction {
         this.opt = opt;
     }
 
-    public Integer getX() {
+    public Long getX() {
         return x;
     }
 
-    public void setX(Integer x) {
+    public void setX(Long x) {
         this.x = x;
     }
 
