@@ -778,7 +778,6 @@ public class Analyser {
         //if_stmt -> 'if' expr block_stmt ('else' (block_stmt | if_stmt))?
         expect(TokenType.IF_KW);
         String type=analyseExpr();
-        popZ(type);
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
 
         instructionmap.add(new Instruction(Operation.br_t,0x43, 1));
@@ -851,7 +850,6 @@ public class Analyser {
 
         String type=analyseExpr();
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
-        popZ(type);
 
         //真的就执行
         instructionmap.add(new Instruction(Operation.br_t,0x43,1));
