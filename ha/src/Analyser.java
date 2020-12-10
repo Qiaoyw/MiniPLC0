@@ -171,7 +171,7 @@ public class Analyser {
         if(mainId == -1) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         Symbol main = symbolmap.get(mainId);
-        int findmain=findIDbyName("main");
+        long findmain=findIDbyName("main");
 
         if (main.back.equals("void")) {
             //没有返回值则分配0个地址
@@ -232,9 +232,9 @@ public class Analyser {
         if(check(TokenType.ASSIGN)){
             next();
             Instruction ins;
-            if(LEVEL==1) ins = new Instruction(Operation.globa,0x0c,Gnum);
+            if(LEVEL==1) ins = new Instruction(Operation.globa,0x0c,(long)Gnum);
             //局部变量指令
-            else ins = new Instruction(Operation.loca,0x0a,Lnum);
+            else ins = new Instruction(Operation.loca,0x0a,(long)Lnum);
             instructionmap.add(ins);
 
             String type2;
@@ -270,13 +270,13 @@ public class Analyser {
         if(LEVEL==1){
             globalmap.add(new Global(Gnum,true));
             //此时指令为globa，压入地址
-            Instruction ins = new Instruction(Operation.globa,0x0c,Gnum);
+            Instruction ins = new Instruction(Operation.globa,0x0c,(long)Gnum);
             instructionmap.add(ins);
         }
         //局部变量指令
         else{
             //生成 loca 指令，准备赋值
-            Instruction ins = new Instruction(Operation.loca,0x0a,Lnum);
+            Instruction ins = new Instruction(Operation.loca,0x0a,(long)Lnum);
             instructionmap.add(ins);
         }
 
@@ -552,12 +552,19 @@ public class Analyser {
         if(symbol.paraid!=-1&&symbol.funid!=-1){
             Function fun= functionmap.get(symbol.funid-1);
             //参数的位置在返回值之后
-            instructionmap.add(new Instruction(Operation.arga,0x0b, fun.returnSlots+symbol.paraid));
+            long i=fun.returnSlots+symbol.paraid;
+            instructionmap.add(new Instruction(Operation.arga,0x0b,i));
         }
         //局部变量
-        else if(symbol.level!= 1) instructionmap.add(new Instruction(Operation.loca,0x0a,symbol.Lid));
+        else if(symbol.level!= 1){
+            long x=symbol.Lid;
+            instructionmap.add(new Instruction(Operation.loca,0x0a,x));
+        }
             //如果该ident是全局变量
-        else instructionmap.add(new Instruction(Operation.globa,0x0c,symbol.Gid));
+        else{
+            long x=symbol.Gid;
+            instructionmap.add(new Instruction(Operation.globa,0x0c,x));
+        }
 
         String typeRight=analyseExpr();
         popZ(typeRight);
@@ -630,7 +637,7 @@ public class Analyser {
             Global global=new Global(Gnum,true,function.name.length(),function.name);
             globalmap.add(global);
             //调用操作
-            ins = new Instruction(Operation.callname,0x4a,Gnum);
+            ins = new Instruction(Operation.callname,0x4a,(long)Gnum);
             Gnum++;
         }
         else{
@@ -642,7 +649,7 @@ public class Analyser {
         }
 
         //分配返回值空间
-        int x=1;
+        long x=1;
         if(function.back=="void")  x=0;
         instructionmap.add(new Instruction(Operation.stackalloc, 0x1a,x));
 
@@ -677,7 +684,7 @@ public class Analyser {
         else if(check(TokenType.CHAR_LITERAL)){
             Token number=next();
             char name=(char)number.getValue();
-            int num=name;
+            long num=name;
             //把常数压入栈
             Instruction ins = new Instruction(Operation.push,0x01,num);
             instructionmap.add(ins);
@@ -700,7 +707,7 @@ public class Analyser {
             globalmap.add(global);
 
             //加入指令集，只需放入全局变量编号即可
-            Instruction ins = new Instruction(Operation.push,0x01,Gnum);
+            Instruction ins = new Instruction(Operation.push,0x01,(long)Gnum);
             instructionmap.add(ins);
 
             //变量数量+1
@@ -719,12 +726,13 @@ public class Analyser {
         if(symbol.paraid!=-1&&symbol.funid!=-1){
             Function fun= functionmap.get(symbol.funid-1);
             //参数的位置在返回值之后
-            instructionmap.add(new Instruction(Operation.arga,0x0b, fun.returnSlots+symbol.paraid));
+            long x=fun.returnSlots+symbol.paraid;
+            instructionmap.add(new Instruction(Operation.arga,0x0b,x));
         }
         //局部变量
-        else if(symbol.level!= 1) instructionmap.add(new Instruction(Operation.loca,0x0a,symbol.Lid));
+        else if(symbol.level!= 1) instructionmap.add(new Instruction(Operation.loca,0x0a,(long)symbol.Lid));
             //如果该ident是全局变量
-        else instructionmap.add(new Instruction(Operation.globa,0x0c,symbol.Gid));
+        else instructionmap.add(new Instruction(Operation.globa,0x0c,(long)symbol.Gid));
 
         instructionmap.add(new Instruction(Operation.load,0x13, null));
 
@@ -787,9 +795,11 @@ public class Analyser {
         popZ(type);
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
 
-        instructionmap.add(new Instruction(Operation.br_t,0x43, 1));
+        long x=1L;
+        instructionmap.add(new Instruction(Operation.br_t,0x43, x));
         //无条件跳转到else
-        Instruction jumptoElse=new Instruction(Operation.br,0x41, 0);
+        x=0L;
+        Instruction jumptoElse=new Instruction(Operation.br,0x41, x);
         instructionmap.add(jumptoElse);
 
         //执行前指令位置
@@ -813,7 +823,8 @@ public class Analyser {
                 if(check(TokenType.L_BRACE)){
                     analyseBlockStmt();
                     //if里返回，不用跳过else，直接返回即可
-                    instructionmap.add(new Instruction(Operation.br,0x41,0));
+                    long p=0L;
+                    instructionmap.add(new Instruction(Operation.br,0x41,p));
                 }
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
@@ -835,7 +846,8 @@ public class Analyser {
                 if(check(TokenType.L_BRACE)){
                     analyseBlockStmt();
                     //else最后需要加一个跳转
-                    instructionmap.add(new Instruction(Operation.br,0x41,0));
+                    long q=0L;
+                    instructionmap.add(new Instruction(Operation.br,0x41,q));
                 }
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
@@ -852,7 +864,8 @@ public class Analyser {
         //while_stmt -> 'while' expr block_stmt
         expect(TokenType.WHILE_KW);
         //先找到起始位置
-        instructionmap.add(new Instruction(Operation.br,0x41,0));
+        long x=0L;
+        instructionmap.add(new Instruction(Operation.br,0x41,x));
         int whileStart = instructionmap.size();
 
         String type=analyseExpr();
@@ -860,9 +873,11 @@ public class Analyser {
         popZ(type);
 
         //真的就执行
-        instructionmap.add(new Instruction(Operation.br_t,0x43,1));
+        long f=1L;
+        instructionmap.add(new Instruction(Operation.br_t,0x43,f));
         //无条件跳转，准备跳过while
-        Instruction jumptoEnd = new Instruction(Operation.br,0x41,0);
+        f=0L;
+        Instruction jumptoEnd = new Instruction(Operation.br,0x41,f);
         instructionmap.add(jumptoEnd);
 
         int positionL = instructionmap.size();
@@ -870,7 +885,8 @@ public class Analyser {
         analyseBlockStmt();
 
         //跳回while
-        Instruction jumptoWhile = new Instruction(Operation.br,0x41,0);
+        f=0L;
+        Instruction jumptoWhile = new Instruction(Operation.br,0x41,f);
         instructionmap.add(jumptoWhile);
 
         long whileEnd = instructionmap.size();
@@ -885,7 +901,8 @@ public class Analyser {
         String backType="void";
         //加载返回地址
         if(!functionNow.getBack().equals("void")){
-            instructionmap.add(new Instruction(Operation.arga,0x0b,0));
+            long x=0L;
+            instructionmap.add(new Instruction(Operation.arga,0x0b,x));
             if(!check(TokenType.SEMICOLON)){
                 backType=analyseExpr();
                 popZ(backType);
