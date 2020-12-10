@@ -42,7 +42,7 @@ public class OpFunction{
                     break;
                 }
                 else if(calculate=="double"){
-                    ins = new Instruction(Operation.sub_i,0x25,null);
+                    ins = new Instruction(Operation.sub_f,0x25,null);
                     instructionsList.add(ins);
                     break;
                 }
