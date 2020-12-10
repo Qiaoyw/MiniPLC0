@@ -484,7 +484,7 @@ public class Analyser {
         }
         while(check(TokenType.AS_KW)||check(TokenType.PLUS)||check(TokenType.MINUS)||check(TokenType.MUL)||check(TokenType.DIV)||check(TokenType.EQ)||check(TokenType.NEQ)||check(TokenType.LT)||check(TokenType.GT)||check(TokenType.LE)||check(TokenType.GE)){
             if(check(TokenType.AS_KW)){
-                type=analyseAsExpr();
+                type=analyseAsExpr(type);
             }
             else{
                 type=analyseOperatorExpr(type);
@@ -571,12 +571,20 @@ public class Analyser {
 
     //??改完了
     /**类型转换表达式*/
-    private String analyseAsExpr() throws CompileError {
+    private String analyseAsExpr(String typeL) throws CompileError {
         //as_expr -> expr 'as' ty
         //消除左递归
         expect(TokenType.AS_KW);
         Token ty=analyseTy();
         String type=(String)ty.getValue();
+        if(typeL.equals("int")&&type.equals("double")) {
+            Instruction ins = new Instruction(Operation.ftoi,0x37,-1);
+            instructionmap.add(ins);
+        }
+        else if(typeL.equals("double")&&type.equals("int")) {
+            Instruction ins = new Instruction(Operation.itof,0x36,-1);
+            instructionmap.add(ins);
+        }
         //只能是int 和double
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         return type;
