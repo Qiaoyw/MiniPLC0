@@ -439,8 +439,10 @@ public class Analyser {
         else if(check(TokenType.L_PAREN)){
             type=analyseGroupExpr();
         }
-        else if(check(TokenType.UINT_LITERAL)||check(TokenType.DOUBLE_LITERAL)||check(TokenType.STRING_LITERAL)){
+        else if(check(TokenType.UINT_LITERAL)||check(TokenType.DOUBLE_LITERAL)||check(TokenType.STRING_LITERAL)||check(TokenType.CHAR_LITERAL)){
+            System.out.println("到这1");
             type=analyseLiteralExpr();
+            System.out.println("到这2");
         }
 
         else if(check(TokenType.IDENT)){
