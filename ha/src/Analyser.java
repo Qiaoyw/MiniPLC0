@@ -695,8 +695,8 @@ public class Analyser {
         else if(check(TokenType.CHAR_LITERAL)){
             Token str=next();
             char name=(char) str.getValue();
-            int hui=(int) name;
-            return "int";
+            int hui= name;
+            return "char";
         }
         else throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
     }
@@ -953,7 +953,7 @@ public class Analyser {
             back="void";
         }
         else if(name.equals("putchar")){
-            param.add(new Symbol("param1","int",false,LEVEL+1,-1,-1,-1,0));
+            param.add(new Symbol("param1","char",false,LEVEL+1,-1,-1,-1,0));
             back="void";
         }
         else if(name.equals("putstr")){
