@@ -242,7 +242,7 @@ public class Analyser {
             type2=analyseExpr();
             if(!type2.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
             //表达式运算后需要弹栈(把剩下的操作符的指令)
-            popZ();
+            popZ(type2);
 
             //存值
             ins = new Instruction(Operation.store_64,0x17,-1);
@@ -291,7 +291,7 @@ public class Analyser {
         if(!type.equals(type2)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         //表达式运算后需要弹栈(把剩下的操作符的指令)
-        popZ();
+        popZ(type2);
 
         expect(TokenType.SEMICOLON);
 
@@ -494,7 +494,7 @@ public class Analyser {
 
     //??改完了
     /**运算符表达式*/
-    private void analyseBinaryOperator() throws CompileError {
+    private void analyseBinaryOperator(String type) throws CompileError {
         //binary_operator -> '+' | '-' | '*' | '/' | '==' | '!=' | '<' | '>' | '<=' | '>='
         if(check(TokenType.PLUS)||check(TokenType.MINUS)||check(TokenType.MUL)||check(TokenType.DIV)||check(TokenType.EQ)||check(TokenType.NEQ)||check(TokenType.LT)||check(TokenType.GT)||check(TokenType.LE)||check(TokenType.GE)){
             //如果不空则继续
@@ -506,7 +506,7 @@ public class Analyser {
                 //前面优先级高，运算
                 if(suan[OpFunction.change(front)][OpFunction.change(last)]==1){
                     front = stack.pop();
-                    OpFunction.OpInstruction(front,instructionmap);
+                    OpFunction.OpInstruction(front,instructionmap,type);
                 }
                 //优先级低，继续
                 else break;
@@ -521,7 +521,7 @@ public class Analyser {
     private String analyseOperatorExpr(String typeLeft) throws CompileError {
         //operator_expr -> expr binary_operator expr
         //消除左递归
-        analyseBinaryOperator();
+        analyseBinaryOperator(typeLeft);
         String typeRight=analyseExpr();
         //左右类型一样
         if(typeLeft.equals(typeRight)) return typeLeft;
@@ -557,7 +557,7 @@ public class Analyser {
         else instructionmap.add(new Instruction(Operation.globa,0x0c,symbol.Gid));
 
         String typeRight=analyseExpr();
-        popZ();
+        popZ(typeRight);
         //存储
         //存储到地址中
         Instruction ins = new Instruction(Operation.store_64,0x17,-1);
@@ -594,7 +594,7 @@ public class Analyser {
         //把函数里没有运算的符号弹出来
         while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
             TokenType tt=stack.pop();
-            OpFunction.OpInstruction(tt,instructionmap);
+            OpFunction.OpInstruction(tt,instructionmap,type);
         }
         //参数类型不同
         if(!param.get(position).type.equals(type)) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
@@ -606,7 +606,7 @@ public class Analyser {
             position++;
             while(stack.peek()!=TokenType.L_PAREN&&!stack.empty()) {
                 TokenType tt=stack.pop();
-                OpFunction.OpInstruction(tt,instructionmap);
+                OpFunction.OpInstruction(tt,instructionmap,type);
             }
         }
         //参数个数不同
@@ -649,12 +649,7 @@ public class Analyser {
             analyseCallParamList(function);
         }
         expect(TokenType.R_PAREN);
-
-        //把函数里没有运算的符号弹出来
-        while(stack.peek()!= TokenType.L_PAREN) {
-            TokenType tt=stack.pop();
-            OpFunction.OpInstruction(tt,instructionmap);
-        }
+        
         stack.pop();
 
         //最后压入call命令
@@ -736,7 +731,7 @@ public class Analyser {
 
         while(stack.peek()!= TokenType.L_PAREN) {
             TokenType tt=stack.pop();
-            OpFunction.OpInstruction(tt,instructionmap);
+            OpFunction.OpInstruction(tt,instructionmap,type);
         }
         stack.pop();
         expect(TokenType.R_PAREN);
@@ -767,9 +762,9 @@ public class Analyser {
     /**表达式语句*/
     private void analyseExprStmt() throws CompileError {
         //expr_stmt -> expr ';'
-        analyseExpr();
+        String type=analyseExpr();
         //弹栈运算
-        popZ();
+        popZ(type);
         expect(TokenType.SEMICOLON);
     }
 
@@ -779,7 +774,7 @@ public class Analyser {
         //if_stmt -> 'if' expr block_stmt ('else' (block_stmt | if_stmt))?
         expect(TokenType.IF_KW);
         String type=analyseExpr();
-        popZ();
+        popZ(type);
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
 
         instructionmap.add(new Instruction(Operation.br_t,0x43, 1));
@@ -852,7 +847,7 @@ public class Analyser {
 
         String type=analyseExpr();
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
-        popZ();
+        popZ(type);
 
         //真的就执行
         instructionmap.add(new Instruction(Operation.br_t,0x43,1));
@@ -883,7 +878,7 @@ public class Analyser {
             instructionmap.add(new Instruction(Operation.arga,0x0b,0));
             if(!check(TokenType.SEMICOLON)){
                 backType=analyseExpr();
-                popZ();
+                popZ(backType);
             }
             //放入地址中
             instructionmap.add(new Instruction(Operation.store_64,0x17,-1));
@@ -983,11 +978,11 @@ public class Analyser {
     }
 
     /**符号栈弹栈**/
-    public void popZ(){
+    public void popZ(String cal){
         //弹栈运算
         while (!stack.empty()) {
             TokenType type= stack.pop();
-            OpFunction.OpInstruction(type,instructionmap);
+            OpFunction.OpInstruction(type,instructionmap,cal);
         }
     }
 
