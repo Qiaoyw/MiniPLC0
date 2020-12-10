@@ -214,7 +214,9 @@ public class Tokenizer {
         //CHAR_LITERAL -> '\'' (char_regular_char | escape_sequence) '\''
         char look =' ';
         it.nextChar();
+
         char now=it.nextChar();
+        System.out.println(now+"\n");
         if(now=='\\'){
             //转义
             if (it.peekChar() == 'n') {
@@ -234,10 +236,14 @@ public class Tokenizer {
                 look = '\t';
                 it.nextChar();
             }
-            
+            else if (it.peekChar() == 'r') {
+                look = '\r';
+                it.nextChar();
+            }
         }
         else look = now;
         it.nextChar();
+        //System.out.println((int)look);
         return new Token(TokenType.CHAR_LITERAL,look,it.previousPos(), it.currentPos());
     }
     /**字符串常量*/
@@ -264,6 +270,14 @@ public class Tokenizer {
                 } else if (it.peekChar() == '"') {
                     it.nextChar();
                     chuan = chuan + '"';
+                }
+                else if (it.peekChar() == 't') {
+                    it.nextChar();
+                    chuan = chuan + '\t';
+                }
+                else if (it.peekChar() == 'r') {
+                    it.nextChar();
+                    chuan = chuan + '\r';
                 }
            }
            else if (look == '"') {
