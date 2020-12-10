@@ -679,9 +679,8 @@ public class Analyser {
         }
         else if(check(TokenType.DOUBLE_LITERAL)){
             Token number=next();
-            double num=(double)number.getValue();
             //直接放进去试试
-            Instruction ins = new Instruction(0x01,Operation.push,num);
+            Instruction ins = new Instruction(Operation.push,0x01,Double.doubleToRawLongBits((double)number.getValue()));
             instructionmap.add(ins);
             return "double";
         }
