@@ -30,6 +30,8 @@ public enum Operation{
     call,
     ret,
     callname,
+    itof,
+    ftoi,
     ;
 
 
