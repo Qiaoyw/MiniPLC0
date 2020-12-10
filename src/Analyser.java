@@ -690,7 +690,8 @@ public class Analyser {
         else if(check(TokenType.DOUBLE_LITERAL)){
             Token number=next();
             //直接放进去试试
-            Instruction ins = new Instruction(Operation.push,0x01,Double.doubleToRawLongBits((double)number.getValue()));
+            String str= Long.toBinaryString(Double.doubleToRawLongBits((Double) number.getValue()));
+            Instruction ins = new Instruction(Operation.push,0x01,toTen(str));
             instructionmap.add(ins);
             return "double";
         }
@@ -1007,6 +1008,18 @@ public class Analyser {
         }
         return -1;
     }
+
+    public static long toTen(String a){
+        long aws = 0;
+        long xi = 1;
+        for(int i=a.length()-1; i>=0; i--){
+            if(a.charAt(i) == '1')
+                aws += xi;
+            xi *=2;
+        }
+        return aws;
+    }
+
 
 
 
