@@ -212,12 +212,12 @@ public class Analyser {
         expect(TokenType.LET_KW);
         //记录标识符名字
         Token ident=expect(TokenType.IDENT);
-        String name= ident.getValueString();
+        String name= (String)ident.getValue();
         expect(TokenType.COLON);
 
         //类型
         Token ty=analyseTy();
-        String type=ty.getValueString();
+        String type=(String)ty.getValue();
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         //全局变量入表
@@ -258,12 +258,12 @@ public class Analyser {
 
         //记录标识符名字
         Token ident=expect(TokenType.IDENT);
-        String name= ident.getValueString();
+        String name= (String)ident.getValue();
 
         expect(TokenType.COLON);
 
         Token ty=analyseTy();
-        String type=ty.getValueString();
+        String type=(String)ty.getValue();
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
 
         //全局变量入表
@@ -321,7 +321,7 @@ public class Analyser {
         Lnum=0;
 
         Token tt= expect(TokenType.IDENT);
-        String name=tt.getValueString();
+        String name=(String)tt.getValue();
 
         //检查函数是否重复
         if(SearchByNameAdd(name)!=-1)  throw new AnalyzeError(ErrorCode.Break,peekedToken.getEndPos());
@@ -340,7 +340,7 @@ public class Analyser {
 
         //函数返回值类型
         Token ty=analyseTy();
-        String back=ty.getValueString();
+        String back=(String)ty.getValue();
         if(back.equals("int")||back.equals("double")) returnSlot=1;
 
         //加入符号表,存当前函数
@@ -404,12 +404,12 @@ public class Analyser {
             next();
         }
         Token ident=expect(TokenType.IDENT);
-        String name= ident.getValueString();
+        String name= (String)ident.getValue();
 
         expect(TokenType.COLON);
 
         Token ty= analyseTy();
-        type=ty.getValueString();
+        type=(String)ty.getValue();
 
         //?要给参数编号么?
         int level=LEVEL+1;
@@ -448,7 +448,7 @@ public class Analyser {
         else if(check(TokenType.IDENT)){
             //三个以IDENT开头的非终结符
             Token ident= next();
-            String name= ident.getValueString();
+            String name= (String)ident.getValue();
             int position=SearchByNameExist(name);
             Symbol symbol;
             //是否是库函数
@@ -574,7 +574,7 @@ public class Analyser {
         //消除左递归
         expect(TokenType.AS_KW);
         Token ty=analyseTy();
-        String type=ty.getValueString();
+        String type=(String)ty.getValue();
         //只能是int 和double
         if(type=="void") throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         return type;
@@ -668,9 +668,8 @@ public class Analyser {
         //literal_expr -> UINT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL|CHAR_LITERAL
         if(check(TokenType.UINT_LITERAL)){
             Token number=next();
-            int num=(int)number.getValue();
             //把常数压入栈
-            Instruction ins = new Instruction(Operation.push,0x01,num);
+            Instruction ins = new Instruction(Operation.push,0x01,(long)number.getValue());
             instructionmap.add(ins);
             return "int";
         }
@@ -690,7 +689,7 @@ public class Analyser {
         }
         else if(check(TokenType.STRING_LITERAL)){
             Token str=next();
-            String name =str.getValueString();
+            String name =(String)str.getValue();
             //字符串是全局变量,加入全局变量量表
             Global global = new Global(Gnum,true,name.length(),name);
             globalmap.add(global);
