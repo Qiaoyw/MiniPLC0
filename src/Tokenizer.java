@@ -71,14 +71,11 @@ public class Tokenizer {
         int type=0;
         double f=0.0;
         long Int=0;
-        while(Character.isDigit(it.peekChar())||it.peekChar()=='.'){
+        while(Character.isDigit(it.peekChar())||it.peekChar()=='.'|| it.peekChar() == 'e' || it.peekChar() == 'E' || it.peekChar() == '+' || it.peekChar() == '-'){
             if(it.peekChar()=='.') type=1;
             shu=shu+it.nextChar();
         }
         if(type==1){
-            if(it.peekChar()=='E'||it.peekChar()=='e') shu=shu+it.nextChar();
-            if(it.peekChar()=='+'||it.peekChar()=='-') shu=shu+it.nextChar();
-            while(Character.isDigit(it.peekChar())) shu=shu+it.nextChar();
             f=Double.parseDouble(shu);
             return new Token(TokenType.DOUBLE_LITERAL,f,it.previousPos(),it.currentPos());
         }
