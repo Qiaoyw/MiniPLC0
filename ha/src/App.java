@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class App{
     public static void main(String[] args) throws CompileError, IOException {
-        //InputStream input = new FileInputStream(args[0]);
-        InputStream input = new FileInputStream("input.txt");
+        InputStream input = new FileInputStream(args[0]);
+        //InputStream input = new FileInputStream("input.txt");
         Scanner scanner;
         scanner = new Scanner(input);
         StringIter iter = new StringIter(scanner);
@@ -32,8 +32,8 @@ public class App{
 
 
         //输出
-         DataOutputStream output = new DataOutputStream(new FileOutputStream(new File("output")));
-        //DataOutputStream output = new DataOutputStream(new FileOutputStream(new File(args[1])));
+         //DataOutputStream output = new DataOutputStream(new FileOutputStream(new File("output")));
+        DataOutputStream output = new DataOutputStream(new FileOutputStream(new File(args[1])));
         output.write(chu);
     }
 
