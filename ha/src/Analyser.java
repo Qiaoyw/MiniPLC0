@@ -666,9 +666,18 @@ public class Analyser {
     /**字面量表达式*/
     private String analyseLiteralExpr() throws CompileError {
         //literal_expr -> UINT_LITERAL | DOUBLE_LITERAL | STRING_LITERAL|CHAR_LITERAL
-        if(check(TokenType.UINT_LITERAL)||check(TokenType.CHAR_LITERAL)){
+        if(check(TokenType.UINT_LITERAL)){
             Token number=next();
             int num=(int)number.getValue();
+            //把常数压入栈
+            Instruction ins = new Instruction(Operation.push,0x01,num);
+            instructionmap.add(ins);
+            return "int";
+        }
+        else if(check(TokenType.CHAR_LITERAL)){
+            Token number=next();
+            char name=(char)number.getValue();
+            int num=name;
             //把常数压入栈
             Instruction ins = new Instruction(Operation.push,0x01,num);
             instructionmap.add(ins);
