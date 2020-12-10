@@ -125,9 +125,6 @@ public class Tokenizer {
                 return new Token(TokenType.PLUS, '+', it.previousPos(), it.currentPos());
             case '*':
                 return new Token(TokenType.MUL, '*', it.previousPos(), it.currentPos());
-            case '/':
-                return new Token(TokenType.DIV, '/', it.previousPos(), it.currentPos());
-            //在这里判断是否是注释
             case '(':
                 return new Token(TokenType.L_PAREN, '(', it.previousPos(), it.currentPos());
             case ')':
@@ -186,10 +183,28 @@ public class Tokenizer {
                 }
                 return new Token(TokenType.GT, '>', it.previousPos(), it.currentPos());
 
+                //出发还是注释
+            case '/':
+                if(it.peekChar()=='/'){
+                    it.nextChar();
+                    lexComment();
+                }
+                return new Token(TokenType.DIV, '/', it.previousPos(), it.currentPos());
+
             default:
                 throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
         }
     }
+    
+    //直接略过注释分析即可
+    private void lexComment() throws TokenizeError{
+        while(true){
+            char now=it.nextChar();
+            if(now=='\n') break;
+        }
+    }
+
+
 
 
     /**字符串常量*/
