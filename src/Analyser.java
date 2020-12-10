@@ -690,8 +690,7 @@ public class Analyser {
         else if(check(TokenType.DOUBLE_LITERAL)){
             Token number=next();
             //直接放进去试试
-            String str= Long.toBinaryString(Double.doubleToRawLongBits((Double) number.getValue()));
-            Instruction ins = new Instruction(Operation.push,0x01,toTen(str));
+            Instruction ins = new Instruction(Operation.push,0x01,Double.doubleToRawLongBits((double)number.getValue()));
             instructionmap.add(ins);
             return "double";
         }
@@ -816,7 +815,8 @@ public class Analyser {
                 if(check(TokenType.L_BRACE)){
                     analyseBlockStmt();
                     //if里返回，不用跳过else，直接返回即可
-                    //instructionmap.add(new Instruction(Operation.br,0x41,0));
+                    if (!instructionmap.get(instructionmap.size() -1).getOpt().equals("ret"))
+                        instructionmap.add(new Instruction(Operation.br,0x41,0));
                 }
                 else if(check(TokenType.IF_KW))
                     analyseIfStmt();
@@ -1008,18 +1008,6 @@ public class Analyser {
         }
         return -1;
     }
-
-    public static long toTen(String a){
-        long aws = 0;
-        long xi = 1;
-        for(int i=a.length()-1; i>=0; i--){
-            if(a.charAt(i) == '1')
-                aws += xi;
-            xi *=2;
-        }
-        return aws;
-    }
-
 
 
 
