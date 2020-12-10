@@ -188,6 +188,7 @@ public class Tokenizer {
                 if(it.peekChar()=='/'){
                     it.nextChar();
                     lexComment();
+                    return nextToken();
                 }
                 return new Token(TokenType.DIV, '/', it.previousPos(), it.currentPos());
 
@@ -195,13 +196,14 @@ public class Tokenizer {
                 throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
         }
     }
-    
+
     //直接略过注释分析即可
-    private void lexComment() throws TokenizeError{
+    private  Token lexComment() throws TokenizeError{
         while(true){
             char now=it.nextChar();
             if(now=='\n') break;
         }
+        return new Token(TokenType.COMMENT, '/', it.previousPos(), it.currentPos());
     }
 
 
