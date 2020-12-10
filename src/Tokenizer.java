@@ -69,10 +69,10 @@ public class Tokenizer {
         String shu="";
         //整数是0，浮点数1
         int type=0;
-        double f=0.0;
-        long Int=0;
+        double f;
+        long Int;
         while(Character.isDigit(it.peekChar())||it.peekChar()=='.'|| it.peekChar() == 'e' || it.peekChar() == 'E' || it.peekChar() == '+' || it.peekChar() == '-'){
-            if(it.peekChar()=='.') type=1;
+            if(it.peekChar()=='.'||it.peekChar() == 'e'||it.peekChar() == 'E') type=1;
             shu=shu+it.nextChar();
         }
         if(type==1){
