@@ -64,18 +64,18 @@ public class Target {
         int magic=0x72303b3e;
         int version=0x00000001;
         //magic
-        PutIn(magic);
+        PutIn(magic,4);
         //version
-        PutIn(version);
+        PutIn(version,4);
 
         //globals.count
-        PutIn(globalmap.size());
+        PutIn(globalmap.size(),4);
         //全局变量表
         for(Global global:globalmap) outGlobal(global);
 
         //直接把_start放进函数表
         //functions.count
-        PutIn(functionmap.size());
+        PutIn(functionmap.size(),4);
         //放_start
         //outFunction(_start);
 
@@ -91,8 +91,8 @@ public class Target {
         //3.value.items
         //全局
         if(global.items == null){
-            PutIn(8);
-            PutIn(0L);
+            PutIn(8,4);
+            PutIn(0L,8);
         }
         //函数或者字符串常量
         else{
@@ -102,15 +102,15 @@ public class Target {
     }
     public void outFunction(Function function){
         //name
-        PutIn(function.name);
+        PutIn(function.name,4);
         //ret_slots
-        PutIn((int)function.returnSlots);
+        PutIn(function.returnSlots,4);
         //param_slots
-        PutIn(function.getParamSlots());
+        PutIn(function.getParamSlots(),4);
         //loc_slots
-        PutIn(function.localSlots);
+        PutIn(function.localSlots,4);
         //body.count
-        PutIn(function.getBody().size());
+        PutIn(function.getBody().size(),4);
         //body.items
         //函数体的指令集
         List<Instruction> ins = function.body;
@@ -122,7 +122,7 @@ public class Target {
             if(instruction.x!= -1){
                 //只有push的操作数是64位
                 if(op==1)
-                    PutIn(instruction.getX());
+                    PutIn(instruction.getX(),8);
                 else
                     PutIn(instruction.getX(),4);
             }
