@@ -22,6 +22,13 @@ public class Target {
             target.add((byte) last);
         }
     }
+    private void PutIn(long x,int length){
+        for(int i = length-1 ; i >=0; i--){
+            //每次得到前面的8位
+            long last = x >> (i * 8) & 0xFF;
+            target.add((byte) last);
+        }
+    }
 
     private void PutIn(int x){
         int length=4;
@@ -117,7 +124,7 @@ public class Target {
                 if(op==1)
                     PutIn(instruction.getX());
                 else
-                    PutIn((int)instruction.getX());
+                    PutIn(instruction.getX(),4);
             }
         }
 
