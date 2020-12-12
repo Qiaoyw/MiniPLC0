@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -580,6 +579,16 @@ public class Analyser {
         Token ty=analyseTy();
         String type=(String)ty.getValue();
 
+        //如果是将int转为double
+        if(typeL.equals("int") && type.equals("double")){
+            instructionmap.add(new Instruction(Operation.itof, 0x36,-1));
+            return "double";
+        }
+        //如果是将double转为int
+        else if(typeL.equals("double") && type.equals("int")){
+            instructionmap.add(new Instruction(Operation.ftoi,0x37, -1));
+            return "int";
+        }
         //只能是int 和double
         if(type.equals("void")) throw new AnalyzeError(ErrorCode.Break,peekedToken.getStartPos());
         return type;
