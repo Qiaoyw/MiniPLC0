@@ -111,22 +111,6 @@ public class Analyser {
     }
 
     /**
-     * 如果下一个 token 的类型是 tt，则前进一个 token 并返回这个 token
-     *
-     * @param tt 类型
-     * @return 如果匹配则返回这个 token，否则返回 null
-     * @throws TokenizeError
-     */
-    private Token nextIf(TokenType tt) throws TokenizeError {
-        Token token = peek();
-        if (token.getTokenType() == tt) {
-            return next();
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * 如果下一个 token 的类型是 tt，则前进一个 token 并返回，否则抛出异常
      *
      * @param tt 类型
@@ -348,7 +332,7 @@ public class Analyser {
         //加入符号表,存当前函数
         Symbol fun=new Symbol(name,"fun",n,LEVEL,back);
 
-        if(back.equals("void")) instructionmap.add(new Instruction(Operation.ret,0x49,-1));
+        
         //System.out.println(name+LEVEL);
         functionNow=fun;
         symbolmap.add(fun);
