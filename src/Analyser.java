@@ -913,15 +913,18 @@ public class Analyser {
         for(Break bb:BreakList){
             int off=whileEnd-bb.position;
             //跳到while后第一条语句
-            bb.instruction.setX(off);
+            if(bb.getWhileId() == InWhile+1) bb.instruction.setX(off);
         }
         for(Continue cc:ContinueList){
             int off=whileEnd-cc.position;
             //跳到while的最后一条语句，即跳回while
-            cc.instruction.setX(off-1);
+            if(cc.getWhileId() == InWhile+1) cc.instruction.setX(off-1);
         }
-        BreakList.clear();
-        ContinueList.clear();
+        if(InWhile==0){
+            BreakList.clear();
+            ContinueList.clear();
+        }
+
 
     }
 
